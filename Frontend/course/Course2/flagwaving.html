@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Three.js Waving Banner</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        background: black;
+        font-family: sans-serif;
+        color: white;
+      }
+      .container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        padding: 3rem;
+      }
+      .left-content {
+        flex: 1;
+      }
+      .left-content h2 {
+        color: gray;
+        font-weight: normal;
+      }
+      .left-content h1 {
+        font-size: 4rem;
+        line-height: 1.2;
+      }
+      .left-content p {
+        color: #aaa;
+        max-width: 80%;
+      }
+      .right-content {
+        flex: 1;
+        height: 100%;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="left-content">
+        <h2>Normal Is Boring</h2>
+        <h1>Don't<br />make<br />normal.</h1>
+        <p>
+          At Sheryians, we don’t settle for ordinary. You’ve got one life to
+          make an impact—make it matter.
+        </p>
+      </div>
+      <div class="right-content">
+        <canvas id="three-canvas"></canvas>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+    <script>
+      const canvas = document.getElementById("three-canvas");
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+      const scene = new THREE.Scene();
+
+      const sizes = {
+        width: canvas.clientWidth,
+        height: canvas.clientHeight,
+      };
+
+      const camera = new THREE.PerspectiveCamera(
+        45,
+        sizes.width / sizes.height,
+        0.1,
+        100
+      );
+      camera.position.z = 5;
+      scene.add(camera);
+
+      renderer.setSize(sizes.width, sizes.height);
+      renderer.setPixelRatio(window.devicePixelRatio);
+
+      const loader = new THREE.TextureLoader();
+      loader.load(
+        "./flag1.jpg",
+        (texture) => {
+          const uniforms = {
+            time: { value: 0 },
+            uTexture: { value: texture },
+          };
+
+          const material = new THREE.ShaderMaterial({
+            uniforms,
+            vertexShader: `
+          uniform float time;
+          varying vec2 vUv;
+
+          void main() {
+            vUv = uv;
+            vec3 pos = position;
+            float waveX = sin(pos.x * 5.0 + time * 3.0) * 0.15;
+            float waveY = cos(pos.y * 5.0 + time * 2.0) * 0.1;
+            pos.z += waveX + waveY;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+          }
+        `,
+            fragmentShader: `
+          uniform sampler2D uTexture;
+          varying vec2 vUv;
+
+          void main() {
+            gl_FragColor = texture2D(uTexture, vUv);
+          }
+        `,
+            side: THREE.DoubleSide,
+          });
+
+          const geometry = new THREE.PlaneGeometry(4, 2.5, 100, 100);
+          const mesh = new THREE.Mesh(geometry, material);
+          scene.add(mesh);
+
+          const clock = new THREE.Clock();
+
+          function animate() {
+            requestAnimationFrame(animate);
+            uniforms.time.value = clock.getElapsedTime();
+            renderer.render(scene, camera);
+          }
+
+          animate();
+        },
+        undefined,
+        (err) => {
+          console.error(
+            "❌ Failed to load texture. Make sure download.png is in the same folder and served via localhost.",
+            err
+          );
+        }
+      );
+
+      window.addEventListener("resize", () => {
+        sizes.width = canvas.clientWidth;
+        sizes.height = canvas.clientHeight;
+        camera.aspect = sizes.width / sizes.height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(sizes.width, sizes.height);
+      });
+    </script>
+  </body>
+</html>

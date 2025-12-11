@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Checkout - Aptitude + Reasoning</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      body {
+        background: #f5f7ff;
+        color: #111827;
+      }
+
+      .page-wrapper {
+        min-height: 100vh;
+        padding: 24px;
+      }
+
+      /* TOP BACK BUTTON WRAPPER */
+      .billing-header {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 16px;
+      }
+
+      /* COMMON BUTTON STYLE (BACK + SUBMIT) */
+      .primary-btn {
+        border: none;
+        outline: none;
+        padding: 10px 24px;
+        border-radius: 999px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        background: #1f3bd9;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        box-shadow: 0 0 10px rgba(31, 59, 217, 0.4);
+        transition: background 0.15s ease, box-shadow 0.15s ease,
+          transform 0.15s ease;
+      }
+
+      .primary-btn:hover {
+        background: #1326a5;
+        box-shadow: 0 0 16px rgba(31, 59, 217, 0.45);
+        transform: translateY(-1px);
+      }
+
+      .primary-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+      }
+
+      .back-btn {
+        padding-inline: 22px;
+      }
+
+      .billing-layout {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: 24px;
+      }
+
+      @media (max-width: 900px) {
+        .billing-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 20px 24px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      }
+
+      .card-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .card-subtitle {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 18px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 6px;
+      }
+
+      label span.req {
+        color: #ef4444;
+      }
+
+      input[type="text"],
+      input[type="tel"],
+      input[type="email"] {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #d1d5db;
+        font-size: 14px;
+        outline: none;
+        transition: border 0.15s ease, box-shadow 0.15s ease;
+        background: #f9fafb;
+      }
+
+      input:focus {
+        border-color: #1f3bd9;
+        box-shadow: 0 0 0 1px rgba(31, 59, 217, 0.25);
+        background: #ffffff;
+      }
+
+      .submit-btn {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+
+      .summary-row.total {
+        font-weight: 600;
+        font-size: 15px;
+        margin-top: 6px;
+      }
+
+      .qr-card {
+        margin-top: 10px;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 16px;
+        text-align: center;
+      }
+
+      .qr-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .qr-img-wrapper {
+        border-radius: 12px;
+        padding: 12px;
+        border: 1px dashed #d1d5db;
+        margin: 10px 0 6px;
+      }
+
+      .qr-img {
+        width: 220px;
+        height: 260px;
+        object-fit: contain;
+      }
+
+      .upi-brands {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 8px;
+      }
+
+      .help-text {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #6b7280;
+        text-align: left;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page-wrapper">
+      <!-- 🔙 BACK BUTTON (same style as submit) -->
+      <div class="billing-header">
+        <button id="back-btn" class="primary-btn back-btn">← Back</button>
+      </div>
+
+      <!-- MAIN BILLING LAYOUT -->
+      <div class="billing-layout">
+        <!-- LEFT: BILLING FORM -->
+        <div class="card">
+          <div class="card-title">Billing Details</div>
+          <div class="card-subtitle">
+            Please fill your details. We’ll use this for your course access and
+            invoice.
+          </div>
+
+          <form id="billing-form">
+            <div class="form-group">
+              <label for="fullName">
+                Full Name <span class="req">*</span>
+              </label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="phone">
+                Phone Number <span class="req">*</span>
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="Enter your phone number"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">
+                Email Address <span class="req">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            <!-- Hidden course + amount (APTITUDE + REASONING) -->
+            <input
+              type="hidden"
+              id="courseTitle"
+              name="courseTitle"
+              value="Three.js Domination"
+            />
+            <input type="hidden" id="amount" name="amount" value="2499" />
+
+            <!-- DB ke courses table se jo ID hai, woh yahan daalo (example: 1) -->
+            <input type="hidden" id="courseId" name="courseId" value="2" />
+
+            <div class="form-group">
+              <label for="utr">
+                Enter UTR / Transaction ID <span class="req">*</span>
+              </label>
+              <input
+                type="text"
+                id="utr"
+                name="utr"
+                placeholder="Enter UTR / Transaction number"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              id="submit-payment-btn"
+              class="primary-btn submit-btn"
+            >
+              Submit Payment
+            </button>
+          </form>
+        </div>
+
+        <!-- RIGHT: ORDER SUMMARY + QR -->
+        <div class="card">
+          <div class="card-title">Order Summary</div>
+          <div class="summary-row">
+            <span>Three.js Domination × 1</span>
+            <span>₹2499.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>₹2499.00</span>
+          </div>
+
+          <div class="qr-card">
+            <div class="qr-title">Scan &amp; Pay (UPI)</div>
+
+            <div class="qr-img-wrapper">
+              <!-- apna original QR image path yaha laga dena -->
+              <img src="../assets/qr_code3js.jpeg" alt="UPI QR" class="qr-img" />
+            </div>
+
+            <div style="font-size: 12px; margin-top: 4px">
+              PRINCE KUMAR SINGH<br />
+              <span style="color: #6b7280; font-size: 11px"
+                >princesingh41@axl</span
+              >
+            </div>
+
+            <div class="upi-brands">
+              Scan and pay with any BHIM UPI app<br />
+              GPay • PhonePe • Paytm • Amazon Pay, etc.
+            </div>
+          </div>
+
+          <p class="help-text">
+            1. First scan the QR and complete the payment.<br />
+            2. Copy the UTR / Transaction ID from your payment app.<br />
+            3. Paste it in the box and click
+            <strong>Submit Payment</strong>.<br />
+            4. Once we verify, your course will be unlocked in your dashboard.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:5000"; // backend
+      const DASHBOARD_URL = "http://localhost:5173/"; // user dashboard (React)
+
+      document.getElementById("back-btn").addEventListener("click", () => {
+        window.history.back();
+      });
+
+      document
+        .getElementById("billing-form")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const btn = document.getElementById("submit-payment-btn");
+          btn.disabled = true;
+          btn.textContent = "Submitting...";
+
+          const fullName = document.getElementById("fullName").value.trim();
+          const phone = document.getElementById("phone").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const courseTitle = document
+            .getElementById("courseTitle")
+            .value.trim();
+          const amount = document.getElementById("amount").value.trim();
+          const courseId = document.getElementById("courseId").value.trim();
+          const utr = document.getElementById("utr").value.trim();
+
+          if (!fullName || !phone || !email || !utr) {
+            alert("Please fill all required fields.");
+            btn.disabled = false;
+            btn.textContent = "Submit Payment";
+            return;
+          }
+
+          try {
+            const res = await fetch(`${API_BASE}/api/payments/create`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                fullName,
+                phone,
+                email,
+                courseTitle,
+                courseId,
+                amount,
+                utr,
+              }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+              alert(
+                "Payment details submitted successfully. We will verify and activate your course soon."
+              );
+
+              // ✅ SUCCESS PE USER DASHBOARD OPEN
+              window.location.href = DASHBOARD_URL;
+            } else {
+              alert(data.message || "Something went wrong. Please try again.");
+              btn.disabled = false;
+              btn.textContent = "Submit Payment";
+            }
+          } catch (err) {
+            console.error("Payment submit error:", err);
+            alert("Server error, please try again later.");
+            btn.disabled = false;
+            btn.textContent = "Submit Payment";
+          }
+        });
+    </script>
+  </body>
+</html>

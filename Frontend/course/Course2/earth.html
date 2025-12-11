@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cinematic Realistic Earth</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #000;
+        color: #fff;
+        font-family: sans-serif;
+        overflow: hidden;
+      }
+      #container {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+      }
+      .ui {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        padding-top: 6vh;
+        pointer-events: none;
+      }
+      .ui h1 {
+        margin: 0;
+        font-weight: 300;
+        font-size: 3.2rem;
+        pointer-events: auto;
+      }
+      .ui p {
+        margin: 0.5rem 0 1.2rem;
+        pointer-events: auto;
+      }
+      .note {
+        font-size: 0.85rem;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <div class="ui">
+      <h1>Earth — Cinematic View</h1>
+      <p class="note">
+        Drag to rotate, scroll to zoom (or use mouse wheel). If textures fail,
+        check the browser console.
+      </p>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from "three";
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+      (function () {
+        // Basic setup
+        const container = document.getElementById("container");
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000);
+
+        const camera = new THREE.PerspectiveCamera(
+          45,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          2000
+        );
+        camera.position.set(0, 0, 10);
+
+        const renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true,
+        });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0;
+        container.appendChild(renderer.domElement);
+
+        // Controls so you can inspect easily
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.rotateSpeed = 0.4;
+        controls.minDistance = 4;
+        controls.maxDistance = 30;
+
+        // Lights
+        const hemi = new THREE.HemisphereLight(0x222244, 0x000000, 0.2);
+        scene.add(hemi);
+
+        const sun = new THREE.DirectionalLight(0xffffff, 1.6);
+        sun.position.set(5, 3, 5);
+        scene.add(sun);
+
+        // Tiny rim fill so nightsides aren't pure black
+        const fill = new THREE.AmbientLight(0x222222, 0.25);
+        scene.add(fill);
+
+        // Loader with crossOrigin (helps avoid some CORS issues)
+        const manager = new THREE.LoadingManager();
+        manager.onError = function (url) {
+          console.warn("Texture failed to load:", url);
+        };
+        const loader = new THREE.TextureLoader(manager);
+        loader.setCrossOrigin("anonymous");
+
+        // Use reliable three.js example textures (CORS-friendly)
+        const TEX = {
+          earth:
+            "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg",
+          bump: "https://threejs.org/examples/textures/planets/earth_bump_2048.jpg",
+          spec: "https://threejs.org/examples/textures/planets/earth_specular_2048.jpg",
+          clouds:
+            "https://threejs.org/examples/textures/planets/earth_clouds_1024.png",
+          star: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NgYGBgAAAABQABDQottAAAAABJRU5ErkJggg==",
+        };
+
+        // Create starfield (simple points)
+        (function makeStars() {
+          const starsGeo = new THREE.BufferGeometry();
+          const starCount = 2000;
+          const positions = new Float32Array(starCount * 3);
+          for (let i = 0; i < starCount; i++) {
+            const r = 90 + Math.random() * 400;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            positions[i * 3 + 0] = r * Math.sin(phi) * Math.cos(theta);
+            positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i * 3 + 2] = r * Math.cos(phi);
+          }
+          starsGeo.setAttribute(
+            "position",
+            new THREE.BufferAttribute(positions, 3)
+          );
+          const starsMat = new THREE.PointsMaterial({
+            size: 0.6,
+            sizeAttenuation: true,
+            color: 0x8888ff,
+          });
+          const starPoints = new THREE.Points(starsGeo, starsMat);
+          scene.add(starPoints);
+        })();
+
+        // Earth group — so atmosphere and clouds can align easily
+        const earthGroup = new THREE.Group();
+        scene.add(earthGroup);
+
+        // Load textures and create Earth once loaded
+        const earthTex = loader.load(TEX.earth);
+        const bumpTex = loader.load(TEX.bump);
+        const specTex = loader.load(TEX.spec);
+        const cloudsTex = loader.load(TEX.clouds);
+
+        // Earth material (Phong for specular map)
+        const earthMat = new THREE.MeshPhongMaterial({
+          map: earthTex,
+          bumpMap: bumpTex,
+          bumpScale: 0.04,
+          specularMap: specTex,
+          specular: new THREE.Color(0x222222),
+          shininess: 10,
+        });
+
+        const earthGeo = new THREE.SphereGeometry(3, 64, 64);
+        const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+        earthMesh.castShadow = false;
+        earthMesh.receiveShadow = false;
+        earthGroup.add(earthMesh);
+
+        // Clouds (slightly larger sphere, transparent, depthWrite false keeps blending nice)
+        const cloudsMat = new THREE.MeshPhongMaterial({
+          map: cloudsTex,
+          transparent: true,
+          opacity: 0.85,
+          depthWrite: false,
+          side: THREE.FrontSide,
+        });
+        const cloudsMesh = new THREE.Mesh(
+          new THREE.SphereGeometry(3.02, 64, 64),
+          cloudsMat
+        );
+        earthGroup.add(cloudsMesh);
+
+        // Atmosphere shader glow (backside mesh)
+        const atmosphereUniforms = {
+          viewVector: { value: new THREE.Vector3() },
+          c: { value: 0.5 },
+          p: { value: 4.0 },
+          glowColor: { value: new THREE.Color(0x66b3ff) },
+        };
+
+        const atmosphereMaterial = new THREE.ShaderMaterial({
+          uniforms: atmosphereUniforms,
+          vertexShader: `
+                    varying vec3 vNormal;
+                    void main() {
+                        vNormal = normalize(normalMatrix * normal);
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+          fragmentShader: `
+                    uniform vec3 viewVector;
+                    uniform float c;
+                    uniform float p;
+                    uniform vec3 glowColor;
+                    varying vec3 vNormal;
+                    void main() {
+                        float intensity = pow( c - dot(vNormal, normalize(viewVector)) , p );
+                        gl_FragColor = vec4(glowColor, 1.0) * intensity;
+                    }
+                `,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
+          transparent: true,
+        });
+
+        const atmosphereMesh = new THREE.Mesh(
+          new THREE.SphereGeometry(3.12, 64, 64),
+          atmosphereMaterial
+        );
+        earthGroup.add(atmosphereMesh);
+
+        // Utility: resize handler
+        function onWindowResize() {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        window.addEventListener("resize", onWindowResize, false);
+
+        // Animation loop
+        const clock = new THREE.Clock();
+        function animate() {
+          requestAnimationFrame(animate);
+          const dt = clock.getDelta();
+
+          // rotate Earth & clouds
+          earthMesh.rotation.y += 0.06 * dt;
+          cloudsMesh.rotation.y += 0.08 * dt;
+
+          // subtle group tilt for a more photographic look
+          earthGroup.rotation.x = 0.05;
+
+          // update atmosphere viewVector uniform (camera relative to atmosphere center)
+          atmosphereUniforms.viewVector.value.subVectors(
+            camera.position,
+            atmosphereMesh.position
+          );
+
+          controls.update();
+          renderer.render(scene, camera);
+        }
+        animate();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hire Us - Contact Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+        background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      }
+
+      /* ✨ MAIN CONTAINER WITH GLOW ANIMATION */
+      .hire-container {
+        width: 100%;
+        max-width: 1100px;
+        background: #020617;
+        border-radius: 26px;
+        padding: 40px 36px;
+        position: relative;
+        overflow: hidden;
+        color: #e5e7eb;
+
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        box-shadow: 0 0 30px rgba(30, 64, 175, 0.6);
+
+        animation: float 6s ease-in-out infinite;
+        backdrop-filter: blur(6px);
+
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 40px;
+      }
+
+      /* Floating animation */
+      @keyframes float {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .hire-container {
+          grid-template-columns: 1fr;
+          padding: 28px;
+        }
+      }
+
+      /* LEFT SECTION */
+      .hire-left {
+        padding-right: 24px;
+        border-right: 1px solid rgba(148, 163, 184, 0.25);
+      }
+
+      @media (max-width: 768px) {
+        .hire-left {
+          padding-right: 0;
+          border-right: none;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+          padding-bottom: 24px;
+        }
+      }
+
+      .hire-right {
+        padding-left: 8px;
+      }
+
+      /* ⭐ Badge Glow */
+      .hire-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        background: rgba(34, 197, 94, 0.15);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        border-radius: 999px;
+        font-size: 13px;
+        color: #bbf7d0;
+        margin-bottom: 14px;
+
+        animation: glow 2s infinite alternate;
+      }
+
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+        }
+        to {
+          box-shadow: 0 0 16px rgba(34, 197, 94, 0.8);
+        }
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #22c55e;
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.3);
+          opacity: 0.6;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* Titles */
+      .hire-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        background: linear-gradient(90deg, #3b82f6, #22c55e);
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hire-subtitle {
+        font-size: 16px;
+        line-height: 1.6;
+        color: #9ca3af;
+      }
+
+      /* Points */
+      .hire-points {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .point-item {
+        display: flex;
+        gap: 12px;
+        font-size: 14px;
+        color: #e5e7eb;
+        transition: transform 0.3s;
+      }
+
+      .point-item:hover {
+        transform: translateX(6px);
+      }
+
+      .point-item span {
+        background: linear-gradient(135deg, #3b82f6, #22c55e);
+        color: white;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+      }
+
+      /* RIGHT FORM */
+      .form-row {
+        display: flex;
+        gap: 18px;
+      }
+
+      @media (max-width: 768px) {
+        .form-row {
+          flex-direction: column;
+        }
+      }
+
+      .form-group {
+        width: 100%;
+        margin-bottom: 14px;
+      }
+
+      label {
+        font-size: 13px;
+        color: #cbd5f5;
+        margin-bottom: 4px;
+        display: block;
+      }
+
+      /* helper text under labels */
+      .helper-text {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-bottom: 4px;
+        opacity: 0.9;
+        display: block;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 12px 14px;
+        background: rgba(15, 23, 42, 0.9);
+        border-radius: 14px;
+        border: 1px solid rgba(51, 65, 85, 0.7);
+        font-size: 14px;
+        color: #e5e7eb;
+        transition: all 0.3s;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
+      }
+
+      textarea {
+        min-height: 120px;
+      }
+
+      /* ✨ Submit Button Animation */
+      .btn-submit {
+        padding: 12px 28px;
+        background: linear-gradient(90deg, #3b82f6, #22c55e);
+        border: none;
+        border-radius: 999px;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        box-shadow: 0 12px 28px rgba(37, 99, 235, 0.4);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        margin-top: 6px;
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-3px);
+      }
+
+      /* Shine effect */
+      .btn-submit::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: skewX(-20deg);
+        transition: 0.5s;
+      }
+
+      .btn-submit:hover::after {
+        left: 100%;
+      }
+
+      /* message text */
+      .msg {
+        margin-top: 10px;
+        font-size: 12px;
+        display: none;
+      }
+
+      .msg.success {
+        color: #4ade80;
+      }
+
+      .msg.error {
+        color: #f97373;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="hire-container">
+      <!-- LEFT CONTENT -->
+      <div class="hire-left">
+        <div class="hire-badge">
+          <span class="dot"></span>
+          Now accepting training & workshop bookings
+        </div>
+
+        <h2 class="hire-title">Hire Us for Your Students / Team</h2>
+        <p class="hire-subtitle">
+          Looking for Aptitude, Reasoning or Placement Training? Share your
+          requirements and we’ll get back to you within 24 hours.
+        </p>
+
+        <div class="hire-points">
+          <div class="point-item">
+            <span>1</span>
+            <p>Custom aptitude & reasoning workshops.</p>
+          </div>
+          <div class="point-item">
+            <span>2</span>
+            <p>Online / offline sessions & mock tests.</p>
+          </div>
+          <div class="point-item">
+            <span>3</span>
+            <p>Corporate & campus hiring test prep.</p>
+          </div>
+          <div class="point-item">
+            <span>4</span>
+            <p>Flexible 1-day to full-length programs.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT FORM -->
+      <div class="hire-right">
+        <form id="hireForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Your Name *</label>
+              <span class="helper-text">
+                Enter your full name as you want us to address you.
+              </span>
+              <input type="text" id="name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <span class="helper-text">
+                Use an active email so we can reply within 24 hours.
+              </span>
+              <input type="email" id="email" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <span class="helper-text">
+                WhatsApp preferred for faster communication.
+              </span>
+              <input type="text" id="phone" />
+            </div>
+
+            <div class="form-group">
+              <label for="org">Institute / Company</label>
+              <span class="helper-text">
+                Optional — helps us personalize your training plan.
+              </span>
+              <input type="text" id="org" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="subject">Requirement Type</label>
+            <span class="helper-text">
+              Choose the training/workshop you are looking for.
+            </span>
+            <select id="subject">
+              <option value="">Select one</option>
+              <option>College Training Program</option>
+              <option>School Workshop</option>
+              <option>Online Session</option>
+              <option>Corporate Training</option>
+              <option>Other / Custom</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Tell us about your requirement *</label>
+            <span class="helper-text">
+              Clearly explain your needs for a faster and accurate response.
+            </span>
+            <textarea id="message" required></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">Send Request ↗</button>
+
+          <div id="formMessage" class="msg"></div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("hireForm");
+      const formMessage = document.getElementById("formMessage");
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const org = document.getElementById("org").value.trim();
+        const subject = document.getElementById("subject").value;
+        const message = document.getElementById("message").value.trim();
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!name || !email || !message) {
+          showMessage("Please fill all required fields (*).", "error");
+          return;
+        }
+
+        if (!emailPattern.test(email)) {
+          showMessage("Please enter a valid email address.", "error");
+          return;
+        }
+
+        try {
+          const res = await fetch("http://localhost:5000/api/hire", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name,
+              email,
+              phone,
+              org,
+              subject,
+              message,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            showMessage(data.message || "Something went wrong.", "error");
+            return;
+          }
+
+          showMessage(data.message, "success");
+          form.reset();
+        } catch (err) {
+          console.error(err);
+          showMessage("Server error. Please try again later.", "error");
+        }
+      });
+
+      function showMessage(text, type) {
+        formMessage.textContent = text;
+        formMessage.className = "msg " + type;
+        formMessage.style.display = "block";
+      }
+    </script>
+  </body>
+</html>

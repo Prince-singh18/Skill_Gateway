@@ -1,0 +1,69 @@
+#ps-alert-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+#ps-alert-overlay.ps-alert-hidden {
+  display: none;
+}
+
+#ps-alert-box {
+  background: #020617;
+  border-radius: 18px;
+  padding: 22px 26px;
+  min-width: 280px;
+  max-width: 420px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(45, 212, 191, 0.4);
+}
+
+#ps-alert-title {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+#ps-alert-message {
+  color: #e5e7eb;
+  margin-bottom: 18px;
+  font-size: 15px;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+#ps-alert-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  background: radial-gradient(circle at 0% 0%, #22c55e, #0f766e);
+  color: #f9fafb;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.55);
+}
+
+#ps-alert-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.75);
+}
+
+#ps-alert-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.55);
+}

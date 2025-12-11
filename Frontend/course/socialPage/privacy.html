@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy — Skill Gateway</title>
+    <meta
+      name="description"
+      content="Privacy policy for Skill Gateway - how we collect, use and protect user data."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0f1724;
+        --card: #0b1220;
+        --muted: #98a0b3;
+        --accent: #7c5cff;
+        --glass: rgba(255, 255, 255, 0.04);
+        --radius: 18px;
+        color-scheme: dark;
+        --max-width: 1100px;
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: linear-gradient(180deg, #071022 0%, #07162a 60%);
+        color: #e6eef8;
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial;
+      }
+
+      /* Back Button */
+      .back-btn {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        padding: 8px 14px;
+        background: var(--accent);
+        color: #050816;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        z-index: 50;
+        transition: 0.18s ease;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
+      }
+
+      .container {
+        max-width: var(--max-width);
+        margin: 64px auto 48px auto;
+        padding: 28px;
+        border-radius: 20px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
+      }
+
+      header {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      .logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--accent), #4cc9f0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #061226;
+        box-shadow: 0 6px 20px rgba(124, 92, 255, 0.18);
+      }
+      h1 {
+        font-size: 1.6rem;
+        margin: 0;
+      }
+      p.lead {
+        color: var(--muted);
+        margin: 6px 0 0;
+        font-size: 0.95rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 28px;
+        margin-top: 20px;
+      }
+      nav.toc {
+        position: sticky;
+        top: 28px;
+        padding: 18px;
+        background: var(--card);
+        border-radius: 14px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      }
+      nav.toc h3 {
+        margin: 0 0 12px;
+        font-size: 0.95rem;
+      }
+      nav.toc ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      nav.toc a {
+        display: block;
+        padding: 8px;
+        border-radius: 10px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+      nav.toc a:hover {
+        background: var(--glass);
+        color: #fff;
+      }
+
+      article.card {
+        padding: 26px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.01),
+          rgba(255, 255, 255, 0.005)
+        );
+        border-radius: 14px;
+      }
+      article h2 {
+        font-size: 1.15rem;
+        margin-top: 0;
+      }
+      .meta {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-bottom: 18px;
+      }
+
+      section {
+        margin-bottom: 20px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .accent {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      dl {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 6px 14px;
+      }
+      dt {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      dd {
+        margin: 0;
+        color: #dbe9ff;
+      }
+
+      /* accordion */
+      .accordion {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+      }
+      .item {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+      }
+      .item button {
+        width: 100%;
+        text-align: left;
+        padding: 16px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 600;
+        font-size: 0.98rem;
+      }
+      .item button:focus {
+        outline: 2px solid rgba(124, 92, 255, 0.18);
+      }
+      .panel {
+        padding: 0 16px 16px 16px;
+        color: var(--muted);
+        line-height: 1.6;
+        display: none;
+      }
+      .item.open .panel {
+        display: block;
+        color: #dbe9ff;
+      }
+
+      footer {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      /* Home Button */
+      .home-btn {
+        display: block;
+        width: 210px;
+        margin: 20px auto 0 auto;
+        padding: 11px 0;
+        text-align: center;
+        font-size: 0.98rem;
+        color: #050816;
+        background: #22c55e;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 600;
+        box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+        transition: 0.2s ease;
+      }
+      .home-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 10px 26px rgba(34, 197, 94, 0.6);
+      }
+
+      @media (max-width: 880px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        nav.toc {
+          position: static;
+        }
+        .container {
+          margin-top: 72px;
+        }
+      }
+
+      @media print {
+        body {
+          background: white;
+          color: black;
+        }
+        .container {
+          box-shadow: none;
+          border-radius: 0;
+          background: white;
+          margin: 0;
+        }
+        nav.toc,
+        .logo,
+        .back-btn,
+        .home-btn {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- BACK BUTTON -->
+    <button class="back-btn" onclick="history.back()">← Back</button>
+
+    <main class="container" role="main">
+      <header>
+        <div class="logo">S</div>
+        <div>
+          <h1>Privacy Policy</h1>
+          <p class="lead">
+            Effective date: <span class="accent">January 1, 2025</span> — Skill
+            Gateway helps students learn in an effective and smarter way.
+          </p>
+        </div>
+      </header>
+
+      <div class="grid">
+        <nav class="toc" aria-label="Table of contents">
+          <h3>On this page</h3>
+          <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#info-we-collect">Information we collect</a></li>
+            <li><a href="#how-we-use">How we use it</a></li>
+            <li><a href="#sharing">Sharing &amp; disclosure</a></li>
+            <li><a href="#your-rights">Your rights</a></li>
+            <li><a href="#security">Security</a></li>
+            <li><a href="#cookies">Cookies &amp; tracking</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+
+        <article class="card" aria-labelledby="privacy-title">
+          <h2 id="privacy-title">Skill Gateway — Privacy Policy</h2>
+          <div class="meta">
+            <span class="muted">Last updated: January 1, 2025</span>
+            <span aria-hidden="true">•</span>
+            <a href="#contact" class="muted">Contact us</a>
+          </div>
+
+          <section id="overview">
+            <h3>Overview</h3>
+            <p class="muted">
+              Skill Gateway respects your privacy. This policy explains what
+              information we collect, why we collect it, and how you can manage
+              or delete your data.
+            </p>
+          </section>
+
+          <section id="info-we-collect">
+            <h3>Information we collect</h3>
+            <dl>
+              <dt>Account data</dt>
+              <dd>
+                Full name, email address, password (hashed), profile info.
+              </dd>
+
+              <dt>Usage data</dt>
+              <dd>
+                Pages you visit, actions within the platform, timestamps,
+                learning analytics.
+              </dd>
+
+              <dt>Device &amp; technical</dt>
+              <dd>
+                IP address, browser type, operating system, device identifiers.
+              </dd>
+
+              <dt>Payment</dt>
+              <dd>
+                Billing details &amp; transactions (processed securely by our
+                payment partners — we never store full card numbers).
+              </dd>
+
+              <dt>Marketing</dt>
+              <dd>Email preferences, promotional interactions.</dd>
+            </dl>
+          </section>
+
+          <section id="how-we-use">
+            <h3>How we use your information</h3>
+            <ul class="muted">
+              <li>To provide and improve Skill Gateway services.</li>
+              <li>To process course purchases & payments.</li>
+              <li>To communicate with you and offer support.</li>
+              <li>
+                To personalize content, recommendations, and learning insights.
+              </li>
+              <li>To protect against fraud and comply with legal rules.</li>
+            </ul>
+          </section>
+
+          <section id="sharing">
+            <h3>Sharing &amp; disclosure</h3>
+            <p class="muted">We never sell your data. We may share it with:</p>
+            <ul class="muted">
+              <li>Service providers (hosting, payments, analytics).</li>
+              <li>Legal authorities when legally required.</li>
+              <li>
+                Business acquirers during a merger or acquisition (with notice).
+              </li>
+            </ul>
+          </section>
+
+          <section id="your-rights">
+            <h3>Your rights</h3>
+            <p class="muted">Depending on your region, you may request:</p>
+            <ul class="muted">
+              <li>Access — a copy of your personal data.</li>
+              <li>Correction — fix incorrect information.</li>
+              <li>Deletion — remove your account/data.</li>
+              <li>Portability — export your data.</li>
+              <li>Restriction — limit how we use your data.</li>
+            </ul>
+            <p class="muted">
+              To request any of these, contact us. Verification may be required.
+            </p>
+          </section>
+
+          <section id="security">
+            <h3>Security</h3>
+            <p class="muted">
+              Skill Gateway uses modern technical and physical safeguards to
+              protect your data. While no system is 100% secure, we follow all
+              legal requirements for breach notifications.
+            </p>
+          </section>
+
+          <section id="cookies">
+            <h3>Cookies &amp; tracking</h3>
+            <p class="muted">
+              We use cookies to improve your learning experience. You may manage
+              or block cookies through your browser.
+            </p>
+
+            <div class="accordion" aria-label="Cookie categories">
+              <div class="item" id="essential">
+                <button aria-expanded="false">
+                  Essential cookies <span class="muted">(required)</span>
+                </button>
+                <div class="panel">
+                  <p>
+                    Required for basic functionality such as login, sessions,
+                    and security.
+                  </p>
+                </div>
+              </div>
+
+              <div class="item" id="analytics">
+                <button aria-expanded="false">
+                  Analytics cookies <span class="muted">(anonymous)</span>
+                </button>
+                <div class="panel">
+                  <p>
+                    Help us improve Skill Gateway by measuring usage patterns.
+                  </p>
+                </div>
+              </div>
+
+              <div class="item" id="marketing">
+                <button aria-expanded="false">Marketing cookies</button>
+                <div class="panel">
+                  <p>
+                    Used for promotional targeting and relevant offers. You can
+                    opt out anytime.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="children">
+            <h3>Children's privacy</h3>
+            <p class="muted">
+              Skill Gateway is not intended for children under 13. We do not
+              knowingly collect data from such users.
+            </p>
+          </section>
+
+          <section id="changes">
+            <h3>Changes to this policy</h3>
+            <p class="muted">
+              We may update this privacy policy. Significant changes will be
+              communicated clearly.
+            </p>
+          </section>
+
+          <section id="contact">
+            <h3>Contact</h3>
+            <p class="muted">For privacy or data-related requests:</p>
+            <address class="muted">
+              Skill Gateway<br />
+              Privacy Team<br />
+              privacy@skillgateway.com
+            </address>
+          </section>
+
+          <footer>
+            <small class="muted"
+              >This privacy policy is for general guidance. Consult legal
+              professionals for full compliance.</small
+            >
+          </footer>
+        </article>
+      </div>
+
+      <!-- HOME BUTTON -->
+      <a href="../home.html" class="home-btn">🏠 Go to Home</a>
+    </main>
+
+    <script>
+      document.querySelectorAll("nav.toc a").forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          document
+            .querySelector(a.getAttribute("href"))
+            .scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+
+      document.querySelectorAll(".accordion .item button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const item = btn.closest(".item");
+          const open = item.classList.toggle("open");
+          btn.setAttribute("aria-expanded", open);
+        });
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Tab") document.body.classList.add("show-focus");
+      });
+    </script>
+  </body>
+</html>

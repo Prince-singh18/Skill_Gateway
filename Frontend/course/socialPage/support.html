@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Support | Skill Gateway</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        margin: 0;
+        background: linear-gradient(180deg, #e8f1fc, #f9fdfb);
+        color: #1f2a44;
+      }
+
+      /* BACK BUTTON */
+      .back-btn {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        padding: 8px 14px;
+        background: linear-gradient(90deg, #2463c8, #2fa87c);
+        color: #ffffff;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        z-index: 50;
+        transition: 0.18s ease;
+      }
+      .back-btn:hover {
+        transform: translateY(-1px) scale(1.03);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+      }
+
+      .support-container {
+        max-width: 800px;
+        margin: 70px auto 50px;
+        background: #fff;
+        border-radius: 18px;
+        padding: 40px 30px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      h1 {
+        color: #2463c8;
+        text-align: center;
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+
+      p {
+        text-align: center;
+        color: #6b7b92;
+        margin-bottom: 25px;
+      }
+
+      .section-title {
+        color: #2fa87c;
+        font-weight: 600;
+        margin: 25px 0 10px;
+      }
+
+      .faq-item {
+        background: #f3f6fc;
+        border-left: 4px solid #2463c8;
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+      }
+
+      .faq-question {
+        color: #2463c8;
+        font-weight: 600;
+      }
+      .faq-answer {
+        margin-top: 2px;
+      }
+
+      .contact-info span {
+        display: block;
+        color: #2fa87c;
+        font-weight: 500;
+        margin: 6px 0;
+      }
+      .contact-info a {
+        color: #2463c8;
+        text-decoration: underline;
+      }
+
+      .quick-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 15px 0 25px;
+      }
+
+      .quick-link {
+        padding: 9px 16px;
+        border-radius: 20px;
+        background: #eef3ff;
+        color: #2463c8;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        box-shadow: 0 2px 6px rgba(36, 99, 200, 0.1);
+      }
+
+      .quick-link:hover {
+        background: #e4f6f0;
+        color: #2fa87c;
+        transform: scale(1.04);
+      }
+
+      .contact-form {
+        background: #f8fdfb;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(47, 168, 124, 0.08);
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-top: 10px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #b7c7e5;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-top: 4px;
+        transition: 0.2s;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: #2463c8;
+        outline: none;
+      }
+
+      textarea {
+        min-height: 60px;
+        resize: vertical;
+      }
+
+      .send-btn {
+        display: block;
+        margin: 15px auto 0;
+        padding: 11px 38px;
+        border-radius: 28px;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        color: #fff;
+        font-size: 1.05rem;
+        background: linear-gradient(90deg, #2463c8, #2fa87c);
+        transition: 0.2s;
+      }
+
+      .send-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 3px 12px rgba(36, 99, 200, 0.25);
+      }
+
+      /* SUCCESS + ERROR MESSAGES */
+      .success-msg,
+      .error-msg {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        display: none;
+      }
+      .success-msg {
+        background: #e4f9f0;
+        border: 1px solid #2fa87c;
+        color: #116a48;
+      }
+      .error-msg {
+        background: #ffecec;
+        border: 1px solid #f87171;
+        color: #b91c1c;
+      }
+
+      @media (max-width: 550px) {
+        .support-container {
+          padding: 20px;
+          margin-top: 70px;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- BACK BUTTON -->
+    <button class="back-btn" onclick="history.back()">← Back</button>
+
+    <div class="support-container">
+      <h1>Support & Help Center</h1>
+      <p>Need help? Check FAQs, quick links, or contact us below.</p>
+
+      <div class="section-title">Frequently Asked Questions</div>
+      <div class="faq-item">
+        <div class="faq-question">How do I access lecture videos?</div>
+        <div class="faq-answer">
+          Log in and go to the Lectures section to view all uploads.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Can I request custom topics?</div>
+        <div class="faq-answer">
+          Yes! Use the form below to suggest topics or doubt sessions.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Who do I contact for tech issues?</div>
+        <div class="faq-answer">
+          Reach out via our support numbers or email for quick help.
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Where can I find policies?</div>
+        <div class="faq-answer">
+          Use the Quick Links below to view all policies and terms.
+        </div>
+      </div>
+
+      <div class="section-title">Get in Touch</div>
+      <div class="contact-info">
+        <span>Phone 1: +91 8982809968</span>
+        <span>Phone 2: +91 7024136832</span>
+        <span
+          >Email:
+          <a href="mailto:hello@princesingh-18.gmail.com"
+            >hello@princesingh-18.gmail.com</a
+          ></span
+        >
+        <span>Discord: <a href="#">Skill Gateway Community</a></span>
+      </div>
+
+      <div class="section-title">Quick Links</div>
+      <div class="quick-links">
+        <a class="quick-link" href="./privacy.html">Privacy Policy</a>
+        <a class="quick-link" href="./Term&condition.html"
+          >Terms & Conditions</a
+        >
+        <a class="quick-link" href="./pricing&refund.html">Refund Policy</a>
+        <a class="quick-link" href="">Hire From Us</a>
+        <a class="quick-link" href="./submitProject.html">Submit Projects</a>
+      </div>
+
+      <!-- CONTACT FORM -->
+      <form class="contact-form" id="supportForm">
+        <div class="section-title">Leave a Message</div>
+
+        <label for="name">Name</label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          placeholder="Your name"
+          required
+        />
+
+        <label for="email">Email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="Your email"
+          required
+        />
+
+        <label for="message">Message</label>
+        <textarea
+          id="message"
+          name="message"
+          placeholder="How can we help you?"
+          required
+        ></textarea>
+
+        <button class="send-btn" type="submit">Send Message</button>
+
+        <!-- SUCCESS / ERROR MESSAGES -->
+        <div id="successMsg" class="success-msg">
+          ✅ Thank you! Your message has been sent.
+        </div>
+        <div id="errorMsg" class="error-msg"></div>
+      </form>
+    </div>
+
+    <!-- FRONTEND JS TO CALL BACKEND + REFRESH AFTER SUBMIT -->
+    <script>
+      const form = document.getElementById("supportForm");
+      const successMsg = document.getElementById("successMsg");
+      const errorMsg = document.getElementById("errorMsg");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const name = form.name.value.trim();
+        const email = form.email.value.trim();
+        const message = form.message.value.trim();
+
+        successMsg.style.display = "none";
+        errorMsg.style.display = "none";
+        errorMsg.textContent = "";
+
+        if (!name || !email || !message) {
+          errorMsg.textContent = "Please fill all fields.";
+          errorMsg.style.display = "block";
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/support", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name, email, message }),
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            successMsg.textContent =
+              data.message || "Thank you! Your message has been sent.";
+            successMsg.style.display = "block";
+            form.reset();
+
+            // Same behaviour as project submit page – refresh after short delay
+            setTimeout(() => {
+              window.location.reload();
+              // 👉 If later you want to send them to home instead:
+              // window.location.href = "../home.html";
+            }, 1500);
+          } else {
+            errorMsg.textContent =
+              data.error || "Something went wrong. Try again later.";
+            errorMsg.style.display = "block";
+          }
+        } catch (err) {
+          console.error(err);
+          errorMsg.textContent =
+            "Unable to connect to server. Please try again later.";
+          errorMsg.style.display = "block";
+        }
+      });
+    </script>
+  </body>
+</html>

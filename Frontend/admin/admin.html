@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Panel - Skill Gateway</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      :root {
+        /* Layout */
+        --page-bg: #050814;
+        --card-bg: #0b1020;
+        --card-elevated: #0f172a;
+        --border-subtle: rgba(148, 163, 184, 0.25);
+
+        /* Text */
+        --text: #e5e7eb;
+        --text-soft: #9ca3af;
+        --text-faint: #6b7280;
+
+        /* Accent */
+        --accent: #06b6d4; /* cyan */
+        --accent-soft: rgba(34, 211, 238, 0.14);
+        --accent-strong: #22d3ee;
+
+        /* State */
+        --danger: #f97373;
+        --danger-soft: rgba(239, 68, 68, 0.12);
+        --success: #4ade80;
+        --success-soft: rgba(34, 197, 94, 0.12);
+        --warning-soft: rgba(234, 179, 8, 0.12);
+
+        /* Misc */
+        --radius-lg: 16px;
+        --radius-md: 10px;
+        --radius-pill: 999px;
+        --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.75);
+        --shadow-subtle: 0 1px 0 rgba(15, 23, 42, 0.9);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+          "Segoe UI", sans-serif;
+        background-color: var(--page-bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+      }
+
+      #app {
+        width: 100%;
+        max-width: 1180px;
+      }
+
+      .admin-box {
+        background: radial-gradient(
+            circle at top left,
+            rgba(15, 23, 42, 0.85),
+            transparent 55%
+          ),
+          var(--card-bg);
+        border-radius: 20px;
+        border: 1px solid rgba(31, 41, 55, 0.85);
+        box-shadow: var(--shadow-soft);
+        padding: 1.5rem 1.6rem 1.2rem;
+      }
+
+      /* LOGIN BOX */
+
+      #loginBox {
+        max-width: 420px;
+        margin: 0 auto;
+      }
+
+      #loginBox h2 {
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+
+      #loginBox p {
+        font-size: 0.85rem;
+        color: var(--text-soft);
+        margin-bottom: 1.2rem;
+      }
+
+      .form-field {
+        text-align: left;
+        margin-bottom: 0.85rem;
+      }
+
+      .form-field label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--text-faint);
+        display: block;
+        margin-bottom: 0.32rem;
+      }
+
+      .form-field input {
+        width: 100%;
+        padding: 0.5rem 0.7rem;
+        border-radius: 0.7rem;
+        border: 1px solid rgba(31, 41, 55, 0.85);
+        background: #030712;
+        color: var(--text);
+        font-size: 0.9rem;
+        outline: none;
+        transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s;
+      }
+
+      .form-field input::placeholder {
+        color: var(--text-faint);
+      }
+
+      .form-field input:focus {
+        border-color: var(--accent);
+        background: #020617;
+        box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.5);
+      }
+
+      .btn-primary {
+        border: none;
+        padding: 0.55rem 1.3rem;
+        border-radius: var(--radius-pill);
+        background: linear-gradient(135deg, #0891b2, #06b6d4);
+        color: white;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        margin-top: 0.6rem;
+        box-shadow: 0 8px 18px rgba(8, 145, 178, 0.45);
+        transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.15s;
+      }
+
+      .btn-primary:hover {
+        opacity: 0.97;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(8, 145, 178, 0.55);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 5px 12px rgba(8, 145, 178, 0.55);
+      }
+
+      .btn-secondary {
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        background: rgba(17, 24, 39, 0.9);
+        border-radius: var(--radius-pill);
+        color: var(--text);
+        padding: 0.32rem 0.9rem;
+        font-size: 0.78rem;
+        cursor: pointer;
+        transition: background 0.15s ease, transform 0.1s ease,
+          border-color 0.15s ease;
+      }
+
+      .btn-secondary:hover {
+        background: rgba(31, 41, 55, 0.98);
+        border-color: rgba(148, 163, 184, 0.65);
+        transform: translateY(-0.5px);
+      }
+
+      .btn-secondary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .logout-btn {
+        border-radius: var(--radius-pill);
+        border: 1px solid rgba(239, 68, 68, 0.65);
+        background: rgba(15, 23, 42, 0.95);
+        color: #fecaca;
+        padding: 0.32rem 0.95rem;
+        font-size: 0.78rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: background 0.15s, transform 0.1s, border-color 0.15s;
+      }
+
+      .logout-btn:hover {
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.9);
+        transform: translateY(-0.5px);
+      }
+
+      /* DASHBOARD HEADER */
+
+      #dashboardBox {
+        display: none;
+      }
+
+      .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.1rem;
+        border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+        padding-bottom: 0.75rem;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+      }
+
+      .brand-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 12px;
+        background: radial-gradient(circle at 20% 0, #22c55e, #06b6d4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.98rem;
+        color: #020617;
+        box-shadow: 0 6px 16px rgba(34, 197, 94, 0.45);
+      }
+
+      .brand-title {
+        font-size: 1.02rem;
+        font-weight: 600;
+      }
+
+      .brand-subtitle {
+        font-size: 0.76rem;
+        color: var(--text-soft);
+      }
+
+      /* TABS */
+
+      .tab-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin: 0.9rem 0 0.8rem;
+        padding: 0.28rem;
+        border-radius: 14px;
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(31, 41, 55, 0.95);
+      }
+
+      .tab-btn {
+        border-radius: 11px;
+        border: none;
+        padding: 0.38rem 0.78rem;
+        font-size: 0.78rem;
+        cursor: pointer;
+        background: transparent;
+        color: var(--text-soft);
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        transition: background 0.15s ease, color 0.15s ease,
+          box-shadow 0.15s ease, transform 0.1s ease;
+      }
+
+      .tab-btn:hover {
+        background: rgba(31, 41, 55, 0.9);
+        color: var(--accent-strong);
+      }
+
+      .tab-btn.active {
+        background: linear-gradient(135deg, #0f172a, #111827);
+        color: var(--accent-strong);
+        box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
+        transform: translateY(-0.5px);
+      }
+
+      /* SECTIONS */
+
+      section {
+        margin-top: 0.65rem;
+      }
+
+      section h3 {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.55rem;
+      }
+
+      .card {
+        background: var(--card-elevated);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-subtle);
+        padding: 0.9rem;
+        box-shadow: var(--shadow-subtle);
+      }
+
+      .flex-row {
+        display: flex;
+        gap: 0.7rem;
+      }
+
+      .message-item {
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(31, 41, 55, 0.9);
+        padding: 0.72rem 0.8rem;
+        margin-bottom: 0.55rem;
+        background: linear-gradient(
+          145deg,
+          rgba(15, 23, 42, 0.95),
+          rgba(15, 23, 42, 0.98)
+        );
+        box-shadow: 0 1px 0 rgba(15, 23, 42, 1);
+      }
+
+      .msg-header {
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+      }
+
+      .msg-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem 1.2rem;
+        font-size: 0.78rem;
+        color: var(--text-soft);
+        margin-bottom: 0.25rem;
+      }
+
+      .msg-details strong {
+        font-weight: 500;
+        color: var(--text);
+        margin-right: 0.2rem;
+      }
+
+      .msg-body {
+        font-size: 0.85rem;
+        color: var(--text);
+        margin-top: 0.15rem;
+      }
+
+      /* TABLES */
+
+      .table-wrapper {
+        border-radius: 14px;
+        border: 1px solid rgba(31, 41, 55, 0.95);
+        overflow: auto;
+        max-height: 60vh;
+        background: #020617;
+        box-shadow: var(--shadow-subtle);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 780px;
+        font-size: 0.78rem;
+      }
+
+      thead {
+        background: #020617;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+
+      thead th {
+        text-align: left;
+        padding: 0.5rem 0.7rem;
+        border-bottom: 1px solid rgba(31, 41, 55, 0.95);
+        font-weight: 500;
+        color: var(--text-soft);
+      }
+
+      tbody td {
+        padding: 0.48rem 0.7rem;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.95);
+        vertical-align: top;
+      }
+
+      tbody tr:nth-child(even) {
+        background: rgba(15, 23, 42, 0.96);
+      }
+
+      tbody tr:nth-child(odd) {
+        background: rgba(15, 23, 42, 0.9);
+      }
+
+      tbody tr:hover {
+        background: rgba(15, 23, 42, 1);
+      }
+
+      .amount-cell {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.16rem 0.4rem;
+        border-radius: var(--radius-pill);
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        font-size: 0.66rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .status-badge {
+        padding: 0.18rem 0.6rem;
+        border-radius: var(--radius-pill);
+        font-size: 0.66rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+        display: inline-block;
+      }
+
+      .status-pending {
+        background: var(--warning-soft);
+        border-color: rgba(234, 179, 8, 0.7);
+        color: #facc15;
+      }
+
+      .status-approved {
+        background: var(--success-soft);
+        border-color: rgba(34, 197, 94, 0.85);
+        color: var(--success);
+      }
+
+      .status-rejected {
+        background: var(--danger-soft);
+        border-color: rgba(239, 68, 68, 0.85);
+        color: #fecaca;
+      }
+
+      .table-actions {
+        white-space: nowrap;
+        display: flex;
+        gap: 0.3rem;
+      }
+
+      /* LOADER */
+
+      .loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.9rem 0;
+      }
+
+      .spinner {
+        width: 18px;
+        height: 18px;
+        border: 3px solid rgba(75, 85, 99, 0.65);
+        border-top-color: var(--accent);
+        border-radius: 999px;
+        animation: spin 0.7s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* MODAL */
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(3, 7, 18, 0.9);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        backdrop-filter: blur(4px);
+      }
+
+      .modal-box {
+        background: #020617;
+        border-radius: 16px;
+        border: 1px solid rgba(31, 41, 55, 0.95);
+        padding: 1rem 1.1rem 0.9rem;
+        max-width: 560px;
+        width: 100%;
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        max-height: 78vh;
+        overflow: auto;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 0.3rem;
+        right: 0.55rem;
+        background: transparent;
+        border: none;
+        color: var(--text-soft);
+        font-size: 1.25rem;
+        cursor: pointer;
+        transition: color 0.15s ease, transform 0.1s ease;
+      }
+
+      .modal-close:hover {
+        color: var(--accent-strong);
+        transform: translateY(-0.5px);
+      }
+
+      .modal-content-body p {
+        font-size: 0.84rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .modal-content-body strong {
+        color: var(--text);
+      }
+
+      /* TOAST */
+
+      .toast {
+        position: fixed;
+        bottom: 1rem;
+        left: 1rem;
+        background: rgba(3, 7, 18, 0.98);
+        border-radius: 999px;
+        padding: 0.45rem 0.9rem;
+        font-size: 0.78rem;
+        border: 1px solid rgba(31, 41, 55, 1);
+        display: none;
+        align-items: center;
+        gap: 0.4rem;
+        z-index: 100;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.85);
+      }
+
+      .toast.toast-success {
+        border-color: rgba(34, 197, 94, 0.8);
+        color: #bbf7d0;
+      }
+
+      .toast.toast-error {
+        border-color: rgba(239, 68, 68, 0.9);
+        color: #fecaca;
+      }
+
+      /* RESPONSIVE */
+
+      @media (max-width: 768px) {
+        body {
+          padding: 0.9rem;
+        }
+        .admin-box {
+          padding: 1.05rem 1rem 0.85rem;
+          border-radius: 18px;
+        }
+        .dashboard-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.65rem;
+        }
+        .tab-nav {
+          border-radius: 12px;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          padding-bottom: 0.2rem;
+        }
+        .tab-btn {
+          flex-shrink: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- LOGIN BOX -->
+      <div id="loginBox" class="admin-box">
+        <h2>Admin Login</h2>
+        <p>Use your admin credentials to manage Skill Gateway data.</p>
+
+        <div class="form-field">
+          <label for="username">Username</label>
+          <input type="text" id="username" autocomplete="off" />
+        </div>
+        <div class="form-field">
+          <label for="password">Password</label>
+          <input type="password" id="password" autocomplete="off" />
+        </div>
+
+        <button class="btn-primary" onclick="login()">
+          <span>Login</span>
+        </button>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div id="dashboardBox" class="admin-box" style="display: none">
+        <div class="dashboard-header">
+          <div>
+            <div class="brand">
+              <div class="brand-icon">SG</div>
+              <div>
+                <div class="brand-title">Skill Gateway — Admin</div>
+                <div class="brand-subtitle">
+                  Messages • Projects • Payments • Support • Activity • Hire Us
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-nav">
+          <button id="tab-messages" class="tab-btn active">Messages</button>
+          <button id="tab-projects" class="tab-btn">Project Submissions</button>
+          <button id="tab-payments" class="tab-btn">Payments</button>
+          <button id="tab-support" class="tab-btn">Support Messages</button>
+          <button id="tab-activity" class="tab-btn">User Activity</button>
+          <button id="tab-hireus" class="tab-btn">Hire Us Requests</button>
+        </div>
+
+        <!-- Messages Section -->
+        <section id="messagesSection">
+          <h3>Messages</h3>
+          <div id="messagesList"></div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projectsSection" style="display: none">
+          <h3>Project Submissions</h3>
+          <div
+            id="projectsError"
+            style="display: none; color: var(--danger); margin-bottom: 0.5rem"
+          ></div>
+          <div
+            id="projectsLoading"
+            class="loader"
+            style="display: none; padding: 1rem 0"
+          >
+            <div class="spinner"></div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name / Email</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>GitHub</th>
+                  <th>File</th>
+                  <th>Submitted</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="projectsTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Payments Section -->
+        <section id="paymentsSection" style="display: none">
+          <h3>Payments</h3>
+          <div
+            style="
+              font-size: 0.8rem;
+              color: var(--text-soft);
+              margin-bottom: 0.35rem;
+            "
+          >
+            Verify UTR in your bank app and then approve / reject. Approved
+            payments will enroll the user into the course and create activity &
+            notifications.
+          </div>
+
+          <div class="flex-row" style="flex-wrap: wrap; margin-bottom: 0.4rem">
+            <div class="badge status-pending">Pending</div>
+            <div class="badge status-approved">Approved</div>
+            <div class="badge status-rejected">Rejected</div>
+          </div>
+
+          <div
+            id="paymentsError"
+            style="display: none; color: var(--danger); margin-bottom: 0.5rem"
+          ></div>
+          <div
+            id="paymentsLoading"
+            class="loader"
+            style="display: none; padding: 1rem 0"
+          >
+            <div class="spinner"></div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name / Email</th>
+                  <th>Phone</th>
+                  <th>Course</th>
+                  <th>Amount</th>
+                  <th>UTR</th>
+                  <th>Status</th>
+                  <th>Created At</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="paymentsTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Support Messages Section -->
+        <section id="supportSection" style="display: none">
+          <h3>Support Messages</h3>
+          <div id="supportMessagesList"></div>
+        </section>
+
+        <!-- User Activity Section -->
+        <section id="activitySection" style="display: none">
+          <h3>User Activity Timeline</h3>
+          <p
+            style="
+              font-size: 0.78rem;
+              color: var(--text-soft);
+              margin-bottom: 0.4rem;
+            "
+          >
+            Real activity logs coming from <code>user_activity</code> table.
+          </p>
+
+          <div
+            id="activityError"
+            style="display: none; color: var(--danger); margin-bottom: 0.5rem"
+          ></div>
+          <div
+            id="activityLoading"
+            class="loader"
+            style="display: none; padding: 1rem 0"
+          >
+            <div class="spinner"></div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>User</th>
+                  <th>Activity</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="activityTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Hire Us Requests Section -->
+        <section id="hireusSection" style="display: none">
+          <h3>Hire Us Requests</h3>
+          <div id="hireusList"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- PROJECT MODAL -->
+    <div id="projectModal" class="modal-overlay">
+      <div class="modal-box">
+        <button class="modal-close" onclick="closeProjectModal()">
+          &times;
+        </button>
+        <div id="projectModalContent" class="modal-content-body"></div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+      const BACKEND_BASE_URL = "http://localhost:5000";
+
+      // ---------- TOAST ----------
+      let toastTimeout;
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = "toast toast-" + type;
+        toast.style.display = "flex";
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.style.display = "none";
+        }, 2600);
+      }
+
+      // ---------- LOGIN / LOGOUT ----------
+
+      function login() {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        if (!username || !password) {
+          showToast("Please enter username & password.", "error");
+          return;
+        }
+
+        fetch(BACKEND_BASE_URL + "/admin/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Invalid credentials");
+            return res.json();
+          })
+          .then((data) => {
+            if (!data.token) throw new Error("No token returned");
+            localStorage.setItem("token", data.token);
+            showToast("Login successful!", "success");
+            showDashboard();
+          })
+          .catch((err) => {
+            console.error(err);
+            showToast("Login failed. Check credentials.", "error");
+          });
+      }
+
+      function logout() {
+        localStorage.removeItem("token");
+        document.getElementById("loginBox").style.display = "block";
+        document.getElementById("dashboardBox").style.display = "none";
+      }
+
+      function showDashboard() {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("dashboardBox").style.display = "block";
+        // Default tab
+        setActiveTab("messages");
+        loadMessages();
+      }
+
+      // ---------- TAB HANDLING ----------
+
+      function setActiveTab(tab) {
+        const tabs = [
+          "messages",
+          "projects",
+          "payments",
+          "support",
+          "activity",
+          "hireus",
+        ];
+
+        tabs.forEach((t) => {
+          const btn = document.getElementById("tab-" + t);
+          const section = document.getElementById(t + "Section");
+          if (!btn || !section) return;
+
+          if (t === tab) {
+            btn.classList.add("active");
+            section.style.display = "block";
+          } else {
+            btn.classList.remove("active");
+            section.style.display = "none";
+          }
+        });
+      }
+
+      // ---------- DATA LOADERS ----------
+
+      function loadMessages() {
+        const token = localStorage.getItem("token");
+        const container = document.getElementById("messagesList");
+        container.innerHTML =
+          '<div class="loader"><div class="spinner"></div></div>';
+
+        fetch(BACKEND_BASE_URL + "/admin/messages", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then((res) => {
+            if (!res.ok) {
+              if (res.status === 401 || res.status === 403) {
+                showToast("Session expired. Please login again.", "error");
+                logout();
+              }
+              throw new Error("Failed to load messages");
+            }
+            return res.json();
+          })
+          .then((data) => {
+            container.innerHTML = "";
+            if (!data || data.length === 0) {
+              container.innerHTML = "<p>No messages found.</p>";
+              return;
+            }
+
+            data.forEach((msg) => {
+              const div = document.createElement("div");
+              div.className = "message-item";
+              div.innerHTML = `
+                <div class="msg-header">${msg.name || "Anonymous"}</div>
+                <div class="msg-details">
+                  <div><strong>Email</strong> <span>${
+                    msg.email || "N/A"
+                  }</span></div>
+                  <div><strong>Phone</strong> <span>${
+                    msg.phone || "N/A"
+                  }</span></div>
+                  <div><strong>Subject</strong> <span>${
+                    msg.subject || "N/A"
+                  }</span></div>
+                  <div><strong>Created At</strong> <span>${
+                    msg.created_at
+                      ? new Date(msg.created_at).toLocaleString()
+                      : "-"
+                  }</span></div>
+                </div>
+                <div class="msg-body">${msg.message || ""}</div>
+              `;
+              container.appendChild(div);
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            container.innerHTML =
+              "<p style='color:#f87171;'>Error loading messages.</p>";
+          });
+      }
+
+      function loadProjects() {
+        const token = localStorage.getItem("token");
+        const tbody = document.getElementById("projectsTableBody");
+        const loading = document.getElementById("projectsLoading");
+        const errorBox = document.getElementById("projectsError");
+
+        if (!tbody || !loading || !errorBox) return;
+
+        tbody.innerHTML = "";
+        errorBox.style.display = "none";
+        loading.style.display = "flex";
+
+        fetch(BACKEND_BASE_URL + "/admin/projects", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to load projects");
+            return res.json();
+          })
+          .then((data) => {
+            loading.style.display = "none";
+            if (!data || data.length === 0) {
+              tbody.innerHTML =
+                "<tr><td colspan='8'>No project submissions found.</td></tr>";
+              return;
+            }
+
+            data.forEach((p, index) => {
+              const tr = document.createElement("tr");
+              const submittedAt =
+                p.created_at || p.submitted_at || p.createdAt || null;
+
+              tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                  <div><strong>${p.name || "N/A"}</strong></div>
+                  <div style="font-size:0.78rem; opacity:0.8;">${
+                    p.email || ""
+                  }</div>
+                </td>
+                <td>${p.title || "Untitled"}</td>
+                <td>${
+                  p.category ? `<span class="badge">${p.category}</span>` : "-"
+                }</td>
+                <td>${
+                  p.github
+                    ? `<a href="${p.github}" target="_blank">GitHub</a>`
+                    : "-"
+                }</td>
+                <td>${
+                  p.file_path
+                    ? `<a href="${BACKEND_BASE_URL}${p.file_path}" target="_blank">Download</a>`
+                    : p.file_name || "-"
+                }</td>
+                <td>${
+                  submittedAt ? new Date(submittedAt).toLocaleString() : "-"
+                }</td>
+                <td>
+                  <button class="btn-secondary" data-project-id="${
+                    p.id
+                  }">View</button>
+                </td>
+              `;
+
+              const viewBtn = tr.querySelector(".btn-secondary");
+              viewBtn.addEventListener("click", () => openProjectModal(p));
+
+              tbody.appendChild(tr);
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            loading.style.display = "none";
+            errorBox.textContent =
+              "Error loading projects. Check backend /admin/projects.";
+            errorBox.style.display = "block";
+          });
+      }
+
+      function loadPayments() {
+        const token = localStorage.getItem("token");
+        const tbody = document.getElementById("paymentsTableBody");
+        const loading = document.getElementById("paymentsLoading");
+        const errorBox = document.getElementById("paymentsError");
+
+        if (!tbody || !loading || !errorBox) return;
+
+        tbody.innerHTML = "";
+        errorBox.style.display = "none";
+        loading.style.display = "flex";
+
+        fetch(BACKEND_BASE_URL + "/admin/payments", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to load payments");
+            return res.json();
+          })
+          .then((data) => {
+            loading.style.display = "none";
+            if (!data || data.length === 0) {
+              tbody.innerHTML =
+                "<tr><td colspan='9'>No payment records found.</td></tr>";
+              return;
+            }
+
+            data.forEach((p, index) => {
+              const createdAt = p.created_at
+                ? new Date(p.created_at).toLocaleString()
+                : "-";
+              const rawStatus = (p.status || "PENDING").toUpperCase();
+              const statusClass =
+                rawStatus === "APPROVED"
+                  ? "status-approved"
+                  : rawStatus === "REJECTED"
+                  ? "status-rejected"
+                  : "status-pending";
+              const isPending = rawStatus === "PENDING";
+
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                  <div><strong>${p.full_name || "N/A"}</strong></div>
+                  <div style="font-size:0.78rem; opacity:0.8;">${
+                    p.email || ""
+                  }</div>
+                </td>
+                <td>${p.phone || "-"}</td>
+                <td>${p.course_title || "-"}</td>
+                <td class="amount-cell">
+                  ₹${p.amount != null ? Number(p.amount).toFixed(2) : "0.00"}
+                </td>
+                <td style="font-size:0.8rem;">${
+                  p.utr || p.transaction_id || "-"
+                }</td>
+                <td>
+                  <span class="status-badge ${statusClass}">${rawStatus}</span>
+                </td>
+                <td>${createdAt}</td>
+                <td>
+                  <div class="table-actions">
+                    <button class="btn-secondary" data-action="APPROVE" ${
+                      isPending ? "" : "disabled"
+                    }>Approve</button>
+                    <button class="btn-secondary" data-action="REJECT" ${
+                      isPending ? "" : "disabled"
+                    }>Reject</button>
+                  </div>
+                </td>
+              `;
+
+              const btns = tr.querySelectorAll(".btn-secondary");
+              btns.forEach((btn) => {
+                const status = btn.getAttribute("data-action");
+                btn.addEventListener("click", () =>
+                  updatePaymentStatus(p.id, status)
+                );
+              });
+
+              tbody.appendChild(tr);
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            loading.style.display = "none";
+            errorBox.textContent =
+              "Error loading payments. Check backend /admin/payments.";
+            errorBox.style.display = "block";
+          });
+      }
+
+      function updatePaymentStatus(id, status) {
+        const token = localStorage.getItem("token");
+        if (!id || !status) {
+          showToast("Invalid payment or status", "error");
+          return;
+        }
+
+        const nice =
+          status === "APPROVED"
+            ? "approve"
+            : status === "REJECTED"
+            ? "reject"
+            : "update";
+        if (!confirm(`Are you sure you want to ${nice} this payment?`)) return;
+
+        fetch(BACKEND_BASE_URL + "/admin/payments/update-status", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({ id, status }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.success) {
+              showToast(
+                data.message || "Failed to update payment status",
+                "error"
+              );
+              return;
+            }
+            showToast(data.message, "success");
+            loadPayments();
+          })
+          .catch((err) => {
+            console.error(err);
+            showToast("Server error while updating status", "error");
+          });
+      }
+
+      function loadSupportMessages() {
+        const token = localStorage.getItem("token");
+        const container = document.getElementById("supportMessagesList");
+        container.innerHTML =
+          '<div class="loader"><div class="spinner"></div></div>';
+
+        fetch(BACKEND_BASE_URL + "/admin/support", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to load support messages");
+            return res.json();
+          })
+          .then((data) => {
+            container.innerHTML = "";
+            if (!data || data.length === 0) {
+              container.innerHTML = "<p>No support messages found.</p>";
+              return;
+            }
+
+            data.forEach((msg) => {
+              const createdAt = msg.created_at
+                ? new Date(msg.created_at).toLocaleString()
+                : "-";
+              const status = msg.status || "new";
+              const source = msg.source_page || "support_page";
+
+              const div = document.createElement("div");
+              div.className = "message-item";
+              div.innerHTML = `
+                <div class="msg-header">${msg.name || "Anonymous"}</div>
+                <div class="msg-details">
+                  <div><strong>Email</strong> <span>${
+                    msg.email || "N/A"
+                  }</span></div>
+                  <div><strong>Status</strong> <span style="text-transform:capitalize;">${status}</span></div>
+                  <div><strong>Source</strong> <span>${source}</span></div>
+                  <div><strong>Created At</strong> <span>${createdAt}</span></div>
+                </div>
+                <div class="msg-body">${msg.message || ""}</div>
+              `;
+              container.appendChild(div);
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            container.innerHTML =
+              "<p style='color:#f87171;'>Error loading support messages.</p>";
+          });
+      }
+
+      // --------- USER ACTIVITY LOADER ---------
+
+      function loadUserActivity() {
+        const token = localStorage.getItem("token");
+        const tbody = document.getElementById("activityTableBody");
+        const loading = document.getElementById("activityLoading");
+        const errorBox = document.getElementById("activityError");
+
+        if (!tbody || !loading || !errorBox) return;
+
+        tbody.innerHTML = "";
+        errorBox.style.display = "none";
+        loading.style.display = "flex";
+
+        fetch(BACKEND_BASE_URL + "/admin/user-activity", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to load activity");
+            return res.json();
+          })
+          .then((data) => {
+            loading.style.display = "none";
+
+            if (!data || data.length === 0) {
+              tbody.innerHTML =
+                "<tr><td colspan='4'>No activity records found.</td></tr>";
+              return;
+            }
+
+            data.forEach((row, index) => {
+              const tr = document.createElement("tr");
+              const displayTime = row.time || row.created_at || "-";
+              tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                  <div><strong>${
+                    row.username || "User #" + row.user_id
+                  }</strong></div>
+                  <div style="font-size:0.78rem; opacity:0.8;">${
+                    row.email || ""
+                  }</div>
+                </td>
+                <td>${row.action || row.text || "-"}</td>
+                <td>${displayTime}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            loading.style.display = "none";
+            errorBox.textContent =
+              "Error loading user activity. Check /admin/user-activity.";
+            errorBox.style.display = "block";
+          });
+      }
+
+      function loadHireRequests() {
+        const token = localStorage.getItem("token");
+        const container = document.getElementById("hireusList");
+        container.innerHTML =
+          '<div class="loader"><div class="spinner"></div></div>';
+
+        fetch(BACKEND_BASE_URL + "/admin/hire-requests", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to load hire requests");
+            return res.json();
+          })
+          .then((data) => {
+            container.innerHTML = "";
+            if (!data || data.length === 0) {
+              container.innerHTML = "<p>No hire requests found.</p>";
+              return;
+            }
+
+            data.forEach((req) => {
+              const createdAt = req.created_at
+                ? new Date(req.created_at).toLocaleString()
+                : "-";
+
+              const div = document.createElement("div");
+              div.className = "message-item";
+              div.innerHTML = `
+                <div class="msg-header">${req.name || "Unknown"}</div>
+                <div class="msg-details">
+                  <div><strong>Email</strong> <span>${
+                    req.email || "N/A"
+                  }</span></div>
+                  <div><strong>Phone</strong> <span>${
+                    req.phone || "N/A"
+                  }</span></div>
+                  <div><strong>Institute / Company</strong> <span>${
+                    req.org || "N/A"
+                  }</span></div>
+                  <div><strong>Requirement Type</strong> <span>${
+                    req.subject || "N/A"
+                  }</span></div>
+                  <div><strong>Created At</strong> <span>${createdAt}</span></div>
+                </div>
+                <div class="msg-body">${req.message || ""}</div>
+              `;
+              container.appendChild(div);
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            container.innerHTML =
+              "<p style='color:#f87171;'>Error loading hire requests.</p>";
+          });
+      }
+
+      // ---------- PROJECT MODAL ----------
+
+      function openProjectModal(project) {
+        const modal = document.getElementById("projectModal");
+        const content = document.getElementById("projectModalContent");
+        if (!modal || !content) return;
+
+        content.innerHTML = `
+          <h3 style="margin-top:0;margin-bottom:0.6rem;">${
+            project.title || "Untitled Project"
+          }</h3>
+          <p><strong>Project ID:</strong> ${project.id || "-"}</p>
+          <p><strong>Name:</strong> ${project.name || "-"}</p>
+          <p><strong>Email:</strong> ${project.email || "-"}</p>
+          <p><strong>Category:</strong> ${project.category || "-"}</p>
+          <p><strong>GitHub:</strong> ${
+            project.github
+              ? `<a href="${project.github}" target="_blank">${project.github}</a>`
+              : "-"
+          }</p>
+          <p><strong>File:</strong> ${
+            project.file_path
+              ? `<a href="${BACKEND_BASE_URL}${project.file_path}" target="_blank">Download file</a>`
+              : project.file_name || "Not uploaded"
+          }</p>
+          <p><strong>Submitted At:</strong> ${
+            project.created_at || project.submitted_at || "-"
+          }</p>
+          <p style="margin-top:0.6rem;"><strong>Description:</strong></p>
+          <div style="margin-top:0.2rem; white-space:pre-wrap; font-size:0.85rem;">
+            ${project.description || ""}
+          </div>
+        `;
+
+        modal.style.display = "flex";
+      }
+
+      function closeProjectModal() {
+        const modal = document.getElementById("projectModal");
+        if (modal) modal.style.display = "none";
+      }
+
+      window.addEventListener("click", (e) => {
+        const modal = document.getElementById("projectModal");
+        if (e.target === modal) {
+          closeProjectModal();
+        }
+      });
+
+      // ---------- INIT ON LOAD ----------
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("token");
+        if (token) {
+          showDashboard();
+        }
+
+        const tabMap = {
+          "tab-messages": () => {
+            setActiveTab("messages");
+            loadMessages();
+          },
+          "tab-projects": () => {
+            setActiveTab("projects");
+            loadProjects();
+          },
+          "tab-payments": () => {
+            setActiveTab("payments");
+            loadPayments();
+          },
+          "tab-support": () => {
+            setActiveTab("support");
+            loadSupportMessages();
+          },
+          "tab-activity": () => {
+            setActiveTab("activity");
+            loadUserActivity();
+          },
+          "tab-hireus": () => {
+            setActiveTab("hireus");
+            loadHireRequests();cd
+          },
+        };
+
+        Object.keys(tabMap).forEach((id) => {
+          const btn = document.getElementById(id);
+          if (btn) btn.addEventListener("click", tabMap[id]);
+        });
+      });
+    </script>
+  </body>
+</html>

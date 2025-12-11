@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login/Register</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/Frontend/login/login-register.css" />
+
+    <!-- Back button small styling -->
+    <style>
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: transparent;
+        border: 1px solid #6b7280;
+        color: #e5e7eb;
+        padding: 6px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 0.2s, transform 0.1s, border-color 0.2s;
+        z-index: 20;
+      }
+      .back-btn:hover {
+        background: #111827;
+        border-color: #9ca3af;
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- BACK BUTTON -->
+    <button class="back-btn" onclick="goBack()">← Back</button>
+
+    <div class="wrapper">
+      <!-- =============== LOGIN BOX =============== -->
+      <div class="form-box login">
+        <h2>Login</h2>
+        <form id="loginForm">
+          <div class="input-box">
+            <input type="email" name="email" required />
+            <label>Email</label>
+          </div>
+
+          <div class="input-box">
+            <input
+              type="password"
+              name="password"
+              required
+              autocomplete="current-password"
+            />
+            <label>Password</label>
+          </div>
+
+          <div class="remember-forgot">
+            <label><input type="checkbox" /> Remember me</label>
+            <a href="#">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="btn">Login</button>
+
+          <!-- OR & SOCIAL LOGIN BUTTONS -->
+          <div
+            style="
+              margin: 15px 0;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            "
+          >
+            <hr style="flex: 1" />
+            <span style="font-size: 12px; color: #aaa">OR</span>
+            <hr style="flex: 1" />
+          </div>
+
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+              margin-bottom: 10px;
+            "
+          >
+            <!-- GOOGLE LOGIN -->
+            <a
+              href="http://localhost:5000/auth/google"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                width: 100%;
+                padding: 10px;
+                background: #ffffff;
+                color: #444;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 14px;
+              "
+            >
+              <img
+                src="https://developers.google.com/identity/images/g-logo.png"
+                alt="Google"
+                style="width: 20px; height: 20px"
+              />
+              Continue with Google
+            </a>
+
+            <!-- PHONE LOGIN -->
+            <a
+              href="#"
+              onclick="showPhoneLogin()"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                width: 100%;
+                padding: 10px;
+                background: #ffffff;
+                color: #444;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 14px;
+              "
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/159/159832.png"
+                alt="Phone"
+                style="width: 20px; height: 20px"
+              />
+              Continue with Phone Number
+            </a>
+          </div>
+
+          <div class="switch-form">
+            Don’t have an account?
+            <a href="#" onclick="showRegister()">Register</a>
+          </div>
+
+          <div
+            id="loginMessage"
+            style="color: red; margin-top: 10px; min-height: 18px"
+          ></div>
+        </form>
+      </div>
+
+      <!-- =============== PHONE LOGIN BOX =============== -->
+      <div id="phoneLoginBox" class="form-box hidden">
+        <h2>Phone Login</h2>
+
+        <div class="input-box">
+          <input
+            type="tel"
+            id="phoneNumberInput"
+            placeholder="+91xxxxxxxxxx"
+            required
+          />
+          <label>Phone Number</label>
+        </div>
+
+        <div id="recaptcha-container" style="margin: 10px 0"></div>
+
+        <button class="btn" type="button" onclick="sendOTP()">Send OTP</button>
+
+        <div class="input-box" style="margin-top: 10px">
+          <input type="text" id="otpInput" placeholder="123456" />
+          <label>Enter OTP</label>
+        </div>
+
+        <button class="btn" type="button" onclick="verifyOTP()">
+          Verify OTP
+        </button>
+
+        <div
+          id="phoneMessage"
+          style="margin-top: 10px; color: #fff; min-height: 18px"
+        ></div>
+
+        <div class="switch-form" style="margin-top: 10px">
+          <a href="#" onclick="showLogin()">← Back to Email Login</a>
+        </div>
+      </div>
+
+      <!-- =============== REGISTER BOX =============== -->
+      <div class="form-box register hidden">
+        <h2>Register</h2>
+        <form id="registerForm">
+          <div class="input-box">
+            <input type="text" name="username" required />
+            <label>Username</label>
+          </div>
+
+          <div class="input-box">
+            <input type="email" id="regEmail" name="email" required />
+            <label>Email</label>
+          </div>
+
+          <div class="input-box">
+            <input
+              type="password"
+              name="password"
+              id="regPassword"
+              required
+              autocomplete="new-password"
+            />
+            <label>Password</label>
+          </div>
+
+          <button type="submit" class="btn" id="registerBtn">Register</button>
+
+          <div class="switch-form">
+            Already have an account?
+            <a href="#" onclick="showLogin()">Login</a>
+          </div>
+
+          <div
+            id="registerMessage"
+            style="color: green; margin-top: 10px; min-height: 18px"
+          ></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Simple back button logic (non-module so onclick can access it) -->
+    <script>
+      function goBack() {
+        if (document.referrer && document.referrer !== "") {
+          window.history.back();
+        } else {
+          window.location.href =
+            "http://localhost:5000/Frontend/course/home.html";
+        }
+      }
+    </script>
+
+    <!-- ====================== SCRIPT ====================== -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
+      import {
+        getAuth,
+        RecaptchaVerifier,
+        signInWithPhoneNumber,
+      } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-analytics.js";
+
+      // ---------- FIREBASE CONFIG ----------
+      const firebaseConfig = {
+        apiKey: "AIzaSyBAArDl47slDuIt5VlM0AWmwX_xLoMMZ2E",
+        authDomain: "mywebapp-62407.firebaseapp.com",
+        projectId: "mywebapp-62407",
+        storageBucket: "mywebapp-62407.appspot.com",
+        messagingSenderId: "106287013769",
+        appId: "1:106287013769:web:6a3512652b507cf2d60b58",
+        measurementId: "G-Z4BDDSCHLS",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      try {
+        getAnalytics(app);
+      } catch (e) {
+        console.warn("Analytics error (ignored in dev):", e.message);
+      }
+      const auth = getAuth(app);
+      let confirmationResult = null;
+
+      // ---------- UI SWITCHING ----------
+      function showRegister() {
+        document.querySelector(".login").classList.add("hidden");
+        document.querySelector(".register").classList.remove("hidden");
+        document.getElementById("loginMessage").textContent = "";
+        document.getElementById("registerMessage").textContent = "";
+        document.getElementById("phoneLoginBox").classList.add("hidden");
+      }
+
+      function showLogin() {
+        document.querySelector(".register").classList.add("hidden");
+        document.querySelector(".login").classList.remove("hidden");
+        document.getElementById("loginMessage").textContent = "";
+        document.getElementById("registerMessage").textContent = "";
+        document.getElementById("phoneLoginBox").classList.add("hidden");
+      }
+
+      function showPhoneLogin() {
+        document.querySelector(".login").classList.add("hidden");
+        document.querySelector(".register").classList.add("hidden");
+        document.getElementById("phoneLoginBox").classList.remove("hidden");
+        document.getElementById("phoneMessage").textContent = "";
+
+        // Reset old captcha if exists
+        if (window.recaptchaVerifier) {
+          try {
+            window.recaptchaVerifier.clear();
+          } catch (e) {}
+        }
+
+        // v10 syntax: (auth, containerId, options)
+        window.recaptchaVerifier = new RecaptchaVerifier(
+          auth,
+          "recaptcha-container",
+          {
+            size: "normal",
+            callback: () => {},
+            "expired-callback": () => {
+              document.getElementById("phoneMessage").textContent =
+                "reCAPTCHA expired. Please try again.";
+            },
+          }
+        );
+
+        window.recaptchaVerifier.render();
+      }
+
+      // make available to onclick=""
+      window.showRegister = showRegister;
+      window.showLogin = showLogin;
+      window.showPhoneLogin = showPhoneLogin;
+
+      // ---------- EMAIL + PASSWORD LOGIN ----------
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const data = Object.fromEntries(new FormData(event.target).entries());
+          const messageDiv = document.getElementById("loginMessage");
+          messageDiv.textContent = "";
+          const btn = event.target.querySelector("button[type='submit']");
+          btn.disabled = true;
+
+          try {
+            const res = await fetch("http://localhost:5000/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify(data),
+            });
+
+            const text = await res.text();
+            let result = {};
+            try {
+              result = JSON.parse(text);
+            } catch (err) {
+              throw new Error("Invalid JSON from server: " + text);
+            }
+
+            if (res.ok && result.success) {
+              messageDiv.style.color = "lightgreen";
+              messageDiv.textContent = "Login successful! Redirecting...";
+              window.location.href = "http://localhost:5173/";
+            } else {
+              messageDiv.style.color = "red";
+              messageDiv.textContent = result.message || "Login failed.";
+            }
+          } catch (error) {
+            console.error(error);
+            messageDiv.style.color = "red";
+            messageDiv.textContent = "Network error. Please try again.";
+          } finally {
+            btn.disabled = false;
+          }
+        });
+
+      // ---------- REGISTER ----------
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const data = Object.fromEntries(new FormData(event.target).entries());
+          const messageDiv = document.getElementById("registerMessage");
+          messageDiv.textContent = "";
+          const btn = event.target.querySelector("button[type='submit']");
+          btn.disabled = true;
+
+          try {
+            const res = await fetch("http://localhost:5000/register", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify(data),
+            });
+
+            const text = await res.text();
+            let result = {};
+            try {
+              result = JSON.parse(text);
+            } catch (err) {
+              throw new Error("Invalid JSON from server: " + text);
+            }
+
+            if (res.ok && result.success) {
+              messageDiv.style.color = "lightgreen";
+              messageDiv.textContent =
+                result.message || "Registered successfully!";
+              setTimeout(() => showLogin(), 1500);
+            } else {
+              messageDiv.style.color = "red";
+              messageDiv.textContent = result.message || "Registration failed.";
+            }
+          } catch (error) {
+            console.error(error);
+            messageDiv.style.color = "red";
+            messageDiv.textContent = "Network error. Please try again.";
+          } finally {
+            btn.disabled = false;
+          }
+        });
+
+      // ---------- PHONE LOGIN (OTP) ----------
+      window.sendOTP = function () {
+        const phone = document.getElementById("phoneNumberInput").value.trim();
+
+        if (!phone || !phone.startsWith("+")) {
+          document.getElementById("phoneMessage").textContent =
+            "Please enter phone number in this format: +91xxxxxxxxxx";
+          return;
+        }
+
+        document.getElementById("phoneMessage").textContent = "Sending OTP...";
+
+        signInWithPhoneNumber(auth, phone, window.recaptchaVerifier)
+          .then((result) => {
+            confirmationResult = result;
+            document.getElementById("phoneMessage").textContent = "OTP sent!";
+          })
+          .catch((error) => {
+            console.error(error);
+            document.getElementById("phoneMessage").textContent =
+              "Failed to send OTP: " + error.message;
+          });
+      };
+
+      window.verifyOTP = function () {
+        const code = document.getElementById("otpInput").value.trim();
+
+        if (!confirmationResult || !code) {
+          document.getElementById("phoneMessage").textContent =
+            "Enter OTP after sending it.";
+          return;
+        }
+
+        document.getElementById("phoneMessage").textContent =
+          "Verifying OTP...";
+
+        confirmationResult
+          .confirm(code)
+          .then((result) => {
+            const phoneUser = result.user;
+
+            fetch("http://localhost:5000/phone-login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ phone: phoneUser.phoneNumber }),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.success) {
+                  window.location.href = "http://localhost:5173/";
+                } else {
+                  document.getElementById("phoneMessage").textContent =
+                    "Phone verified but server error: " + data.message;
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+                document.getElementById("phoneMessage").textContent =
+                  "Network error.";
+              });
+          })
+          .catch((error) => {
+            console.error(error);
+            document.getElementById("phoneMessage").textContent =
+              "Invalid OTP: " + error.message;
+          });
+      };
+    </script>
+  </body>
+</html>

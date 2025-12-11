@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About | Skill Gateway</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f6f7fb;
+        margin: 0;
+        padding: 0;
+        color: #222;
+      }
+
+      /* Back Button */
+      .back-btn {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        padding: 8px 14px;
+        background: #2274a5;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: 0.2s ease;
+      }
+      .back-btn:hover {
+        background: #195d85;
+        transform: translateY(-2px);
+      }
+
+      .about-container {
+        max-width: 700px;
+        margin: 70px auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 36px 30px 50px 30px;
+        position: relative;
+      }
+
+      h1 {
+        font-size: 2rem;
+        color: #2274a5;
+        margin-bottom: 5px;
+      }
+      h2 {
+        font-size: 1.25rem;
+        color: #338a2d;
+        margin-top: 0;
+      }
+      .avatar {
+        width: 100px;
+        height: 100px;
+        background: #d1e9fc;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        font-size: 2.7rem;
+        color: #2274a5;
+      }
+      .info {
+        margin-bottom: 22px;
+        font-size: 1.07rem;
+        line-height: 1.7;
+      }
+      .skills-section {
+        margin-top: 20px;
+      }
+      .skills-list {
+        padding-left: 18px;
+        margin: 10px 0 0 4px;
+      }
+      .section-title {
+        color: #338a2d;
+        font-weight: 600;
+        margin-bottom: 0;
+      }
+
+      /* Portfolio Button */
+      .portfolio-btn {
+        display: block;
+        width: 210px;
+        margin: 38px auto 0 auto;
+        padding: 13px 0;
+        text-align: center;
+        font-size: 1.05rem;
+        color: #fff;
+        background: linear-gradient(90deg, #2274a5 40%, #338a2d 100%);
+        border: none;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 3px 18px rgba(34, 116, 165, 0.1);
+        transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
+      }
+      .portfolio-btn:hover {
+        background: linear-gradient(90deg, #338a2d 10%, #2274a5 100%);
+        box-shadow: 0 6px 25px rgba(34, 116, 165, 0.19);
+        transform: translateY(-2px) scale(1.03);
+      }
+
+      /* Home Button */
+      .home-btn {
+        display: block;
+        width: 190px;
+        margin: 18px auto 0 auto;
+        padding: 11px 0;
+        text-align: center;
+        font-size: 1rem;
+        color: #fff;
+        background: #338a2d;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+      }
+      .home-btn:hover {
+        background: #276c22;
+        transform: translateY(-2px);
+      }
+
+      /* Responsive for mobile */
+      @media (max-width: 500px) {
+        .about-container {
+          padding: 22px 9px 40px 9px;
+          margin-top: 55px;
+        }
+        .portfolio-btn,
+        .home-btn {
+          width: 90%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- BACK BUTTON ADDED -->
+    <button class="back-btn" onclick="history.back()">← Back</button>
+
+    <div class="about-container">
+      <div class="avatar">PS</div>
+      <h1>About Skill Gateway</h1>
+      <h2>Prince Singh | BCA 3rd Year Student</h2>
+
+      <div class="info">
+        Welcome to <strong>Skill Gateway</strong> – your smart path to mastering
+        competitive and academic subjects! I am Prince Singh, a third-year BCA
+        student from Chhattisgarh. My mission is to guide students through
+        <strong>logical reasoning</strong>,
+        <strong>data structures & algorithms</strong> (DSA), and key concepts in
+        BCA.<br /><br />
+        On this website, you’ll find upcoming lecture videos, practical tips,
+        and resources to help you excel in exams and sharpen your skills. Join
+        me on your learning journey!
+      </div>
+
+      <div class="skills-section">
+        <div class="section-title">Topics Offered:</div>
+        <ul class="skills-list">
+          <li>Logical Reasoning (Competitive Exams & Practice)</li>
+          <li>Data Structures & Algorithms (DSA Fundamentals)</li>
+          <li>BCA Core Subjects (Lecture Series)</li>
+        </ul>
+      </div>
+
+      <div class="skills-section" style="margin-top: 18px">
+        <div class="section-title">Stay Tuned!</div>
+        <p>
+          Follow along for regular lecture updates, expert tips, and study
+          strategies to boost your skills and confidence.
+        </p>
+      </div>
+
+      <!-- Portfolio Button -->
+      <a
+        href="/Frontend/portfolio/index.html"
+        target="_blank"
+        class="portfolio-btn"
+      >
+        Visit My Portfolio
+      </a>
+
+      <!-- HOME BUTTON ADDED -->
+      <a href="../home.html" class="home-btn">🏠 Go to Home</a>
+    </div>
+  </body>
+</html>

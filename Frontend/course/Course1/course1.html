@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prince Singh - Aptitude & Reasoning</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="Course1-style.css" />
+    <link rel="stylesheet" href="/Frontend/alerts/custom-alert.css" />
+    <!-- ✅ Scratch card ke liye extra CSS -->
+    <style>
+      /* --- Scratch card animation --- */
+      .scratch-card {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        margin-top: 30px;
+      }
+
+      .scratch-card img {
+        display: block;
+        width: 320px; /* apne hisab se change kar sakta hai */
+        max-width: 100%;
+        border-radius: 20px;
+      }
+
+      /* Upar wali scratch layer */
+      .scratch-overlay {
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        background: repeating-linear-gradient(
+          -45deg,
+          #444,
+          #444 8px,
+          #555 8px,
+          #555 16px
+        );
+        box-shadow: 0 0 18px rgba(0, 255, 200, 0.7);
+      }
+
+      /* Click hone ke baad animation chalegi */
+      .scratch-card.scratching .scratch-overlay {
+        animation: scratchOff 1.2s forwards;
+      }
+
+      @keyframes scratchOff {
+        0% {
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+          opacity: 1;
+        }
+        40% {
+          clip-path: polygon(0 0, 100% 0, 80% 60%, 0 80%);
+          opacity: 1;
+        }
+        70% {
+          clip-path: polygon(20% 0, 100% 0, 100% 20%, 40% 100%, 0 100%, 0 40%);
+          opacity: 0.8;
+        }
+        100% {
+          clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%);
+          opacity: 0;
+          pointer-events: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <header class="header">
+        <a href="#course-hero" class="logo">SKILL <span>GET_WAY</span></a>
+        <nav class="navbar">
+          <a href="../home.html" class="active">Home</a>
+          <a href="#course-content-list">Course Content</a>
+          <a href="#training-section">Training</a>
+          <a href="#value-section">Value</a>
+          <a href="#contact-footer">Contact</a>
+        </nav>
+      </header>
+
+      <section id="course-hero">
+        <div class="course-content">
+          <h1>Aptitude & Reasoning<br />for Campus Placements.</h1>
+          <div class="tags">
+            <span>Logic Building 🧠</span>
+            <span>Campus Placements 💻</span>
+          </div>
+          <p style="font-size: 28px; color: white; font-weight: 500">
+            Only
+            <span style="text-decoration: line-through; color: #716a6a"
+              >₹1999</span
+            >
+            <span style="color: #00ff88; font-weight: 700">₹1100*</span>
+            <span style="color: #ccc">(65% Off)</span>
+          </p>
+          <br />
+          <br />
+          <a
+            id="aptitude-buy-btn"
+            style="
+              display: inline-block;
+              background: linear-gradient(90deg, #00ff88, #00cc6a);
+              color: #000;
+              padding: 12px 30px;
+              border-radius: 35px;
+              text-decoration: none;
+              font-weight: 600;
+              font-size: 18px;
+              box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+              transition: all 0.3s ease;
+              text-align: center;
+            "
+          >
+            Buy Now 🌟 Start Learning
+          </a>
+
+          <!-- ✅ Buy button script -->
+          <script>
+            const BASE_URL = "http://localhost:5000";
+            const COURSE_ID = 1; // course1
+
+            async function handleBuyClick(e) {
+              e.preventDefault();
+
+              try {
+                const res = await fetch(
+                  `${BASE_URL}/api/check-purchase/${COURSE_ID}`,
+                  {
+                    credentials: "include",
+                  }
+                );
+                const data = await res.json();
+
+                if (data.purchased) {
+                  alert(
+                    "You’re already enrolled in this course.\nPlease continue from your Dashboard → My Courses."
+                  );
+                } else {
+                  // Not purchased → billing page
+                  window.location.href =
+                    "/Frontend/Billing/billing.html?courseId=1";
+                }
+              } catch (err) {
+                console.error(err);
+                window.location.href =
+                  "/Frontend/Billing/billing.html?courseId=1"; // fallback
+              }
+            }
+
+            document
+              .getElementById("aptitude-buy-btn")
+              .addEventListener("click", handleBuyClick);
+          </script>
+
+          <br />
+          <br />
+          <br />
+          <p class="note">
+            *Use Coupon <strong>“EARLY10”</strong> to Get 10% More Discount.
+          </p>
+        </div>
+
+        <!-- Right side thumbnail (abhi sirf image + play button) -->
+        <div class="video-play">
+          <img
+            src="/Frontend/assets/ThumnailLR.png"
+            alt="Course Video Thumbnail"
+          />
+          <button>▶</button>
+        </div>
+      </section>
+
+      <section class="placed-section">
+        <div class="background-animation"></div>
+        <div class="content">
+          <h1 class="placed-title">Get Placed.</h1>
+          <p>With Aptitude And Reasoning*</p>
+          <div class="cards-container">
+            <div class="card">
+              <div class="card-content">
+                <h2>15+</h2>
+                <p>Hours</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-content">
+                <h2>60+</h2>
+                <p>Lectures</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-content">
+                <h2>500+</h2>
+                <p>Questions</p>
+              </div>
+            </div>
+          </div>
+          <div class="buttons-container">
+            <a href="../home.html#courses-section-link">
+              <button class="btn-secondary">Courses</button>
+            </a>
+            <a href="/Frontend/course/socialPage/support.html">
+              <button class="btn-secondary">Request Callback</button>
+            </a>
+            <a href="/Frontend/Billing/billing.html">
+              <button class="btn-primary">Buy Now</button>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="course-content-list" class="accordion-section">
+        <h1 class="accordion-heading">
+          Dominate.<br /><span>From Start To Victory.</span>
+        </h1>
+
+        <div class="accordion">
+          <div class="accordion-item">
+            <div class="accordion-title">
+              1. Classic Chapters <span class="arrow">Expand ▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>Percentage <span>30m</span></p>
+              <p>Profit and Loss <span>45m</span></p>
+              <p>Simple Interest <span>25m</span></p>
+              <p>Compound Interest <span>28m</span></p>
+              <p>Ratio and Proportion <span>40m</span></p>
+              <p>Allegation and Mixtures <span>35m</span></p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-title">
+              2. Numbers and Related Topics <span class="arrow">Expand ▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>Number System <span>60m</span></p>
+              <p>HCF and LCM <span>30m</span></p>
+              <p>Averages <span>35m</span></p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-title">
+              3. Speed work and Time Related Topics
+              <span class="arrow">Expand ▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>Work and Time <span>33m</span></p>
+              <p>Pipes and Cisterns <span>31m</span></p>
+              <p>Speed Distance and Time <span>18m</span></p>
+              <p>Problems on train <span>16m</span></p>
+              <p>Boats and Streams <span>19m</span></p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-title">
+              4. Probability and Combinations
+              <span class="arrow">Expand ▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>Permutations and Combination <span>40m</span></p>
+              <p>Probability <span>38m</span></p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-title">
+              5. Progression <span class="arrow">Expand ▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>Arthematic Progression <span>25m</span></p>
+              <p>Geometric Progression <span>20m</span></p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-title">
+              6. Miscellaneous Topics <span class="arrow">Expand ▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>Calendar <span>22m</span></p>
+              <p>Clocks <span>28m</span></p>
+              <p>Data Interpretation <span>50m</span></p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-title">
+              7. Logical Reasoning <span class="arrow">Expand ▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>Direction Sense <span>30m</span></p>
+              <p>Blood Relation <span>25m</span></p>
+              <p>Syllogism <span>35m</span></p>
+              <p>Arrangements <span>40m</span></p>
+              <p>Series Completion <span>20m</span></p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-title">
+              8. Verbal Reasoning <span class="arrow">Expand ▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>Introduction to Verbal reasoning <span>15m</span></p>
+              <p>Sentence Ordering questions <span>20m</span></p>
+              <p>Error Identification questions <span>25m</span></p>
+              <p>Sentence Improvement questions <span>20m</span></p>
+              <p>Cloze Test Question <span>18m</span></p>
+              <p>Reading Comprehension questions <span>30m</span></p>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-title">
+              9. Previous Years Asked Questions
+              <span class="arrow">Expand ▼</span>
+            </div>
+            <div class="accordion-content">
+              <p>Set 1 (15 MCQs) <span>40m</span></p>
+              <p>Set 2 (15 MCQs) <span>40m</span></p>
+              <p>Set 3 (15 MCQs) <span>40m</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="training-section" class="training-section">
+        <div class="training-text">
+          <h1>Training<br /><span>Which Matters.</span></h1>
+          <p>Beyond Plans, Towards Achievement.</p>
+        </div>
+
+        <div class="training-gallery">
+          <div
+            class="training-image"
+            style="background-image: url('/Frontend/assets/P1.jpg')"
+          ></div>
+          <div
+            class="training-image1"
+            style="background-image: url('/Frontend/assets/P2.jpg')"
+          ></div>
+          <div
+            class="training-image"
+            style="background-image: url('/Frontend/assets/P3.jpg')"
+          ></div>
+          <div
+            class="training-image1"
+            style="background-image: url('/Frontend/assets/P4.jpg')"
+          ></div>
+          <div
+            class="training-image"
+            style="background-image: url('/Frontend/assets/P5.jpg')"
+          ></div>
+        </div>
+      </section>
+
+      <section id="value-section" class="value-section">
+        <h1>More Value,<br />Less Cost.</h1>
+        <p>
+          Quality And Value Drive Us,
+          <span class="highlight-green">Delivering More</span><br />
+          For <span class="highlight-green">Less Cost.</span>
+        </p>
+        <small>*Course validity is for 1 year from date of purchase</small>
+
+        <p class="scratch-label">Scratch this to get a discount coupon</p>
+
+        <!-- ✅ Scratch card with overlay -->
+        <div class="scratch-card" id="scratch-card">
+          <!-- niche wala asli coupon image -->
+          <img src="../Course1/image.png" alt="Scratch This Card" />
+          <!-- upar ki scratch layer -->
+          <div class="scratch-overlay"></div>
+        </div>
+      </section>
+
+      <footer id="contact-footer" class="footer">
+        <div class="footer-top">
+          <p class="footer-social-title">Let’s connect with our socials</p>
+          <div class="footer-socials">
+            <div class="social-icons">
+              <a href="https://www.instagram.com/" target="_blank">IG</a>
+              <a href="https://www.linkedin.com/" target="_blank">LI</a>
+              <a href="https://discord.com/" target="_blank">DIS</a>
+              <a href="https://www.youtube.com/" target="_blank">YT</a>
+              <a href="https://twitter.com/" target="_blank">TW</a>
+            </div>
+          </div>
+        </div>
+
+        <hr class="footer-divider" />
+
+        <div class="footer-links">
+          <div class="column">
+            <h4>COMPANY</h4>
+            <ul>
+              <li><a href="../socialPage/about.html">About Us</a></li>
+              <li><a href="../socialPage/support.html">Support</a></li>
+              <li><a href="../socialPage/privacy.html">Privacy Policy</a></li>
+              <li>
+                <a href="../socialPage/Term&condition.html"
+                  >Terms and Condition</a
+                >
+              </li>
+              <li>
+                <a href="../socialPage/pricing&refund.html"
+                  >Pricing and Refund</a
+                >
+              </li>
+              <li><a href="#">Hire From Us</a></li>
+            </ul>
+          </div>
+          <div class="column">
+            <h4>COMMUNITY</h4>
+            <ul>
+              <li><a href="#">Discord</a></li>
+            </ul>
+          </div>
+          <div class="column">
+            <h4>Get In Touch</h4>
+            <p>+91 8982809968</p>
+            <p>+91 7024136831</p>
+            <p>
+              <a href="mailto:hello@princesingh.com">hello@princesingh.com</a>
+            </p>
+            <p>HIG - 18 TATIBHAND,<br />RAIPUR(CG), 492099</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Custom Alert -->
+    <div id="ps-alert-overlay" class="ps-alert-hidden">
+      <div id="ps-alert-box">
+        <div id="ps-alert-title">Message</div>
+        <div id="ps-alert-message"></div>
+        <button id="ps-alert-btn">OK</button>
+      </div>
+    </div>
+
+    <!-- ✅ Scratch effect JS -->
+    <script>
+      const scratchEl = document.getElementById("scratch-card");
+      if (scratchEl) {
+        scratchEl.addEventListener("click", () => {
+          if (!scratchEl.classList.contains("scratching")) {
+            scratchEl.classList.add("scratching");
+          }
+        });
+      }
+    </script>
+
+    <script src="Course1-script.js"></script>
+    <script src="/Frontend/alerts/custom-alert.js"></script>
+  </body>
+</html>

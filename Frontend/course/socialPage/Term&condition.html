@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Terms & Conditions — Skill Gateway</title>
+
+    <meta
+      name="description"
+      content="Terms & Conditions for Skill Gateway — guidelines for using our platform, courses, and services."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg: #0f1724;
+        --card: #0b1220;
+        --muted: #98a0b3;
+        --accent: #7c5cff;
+        --glass: rgba(255, 255, 255, 0.04);
+        color-scheme: dark;
+        --radius: 18px;
+        --max-width: 1100px;
+        font-family: "Inter", system-ui;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #071022 0%, #07162a 60%);
+        color: #e6eef8;
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+
+      .accent {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      /* BACK BUTTON */
+      .back-btn {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        padding: 8px 14px;
+        background: var(--accent);
+        color: #050816;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        z-index: 50;
+        transition: 0.18s ease;
+      }
+      .back-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
+      }
+
+      .container {
+        max-width: var(--max-width);
+        margin: 64px auto 48px auto;
+        padding: 28px;
+        border-radius: 20px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
+      }
+
+      header {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+
+      .logo {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, var(--accent), #4cc9f0);
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 1.8rem;
+        color: #061226;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 20px rgba(124, 92, 255, 0.18);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.7rem;
+      }
+
+      p.lead {
+        margin: 6px 0 0;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 28px;
+        margin-top: 20px;
+      }
+
+      nav.toc {
+        background: var(--card);
+        padding: 18px;
+        border-radius: 14px;
+        position: sticky;
+        top: 28px;
+      }
+
+      nav.toc h3 {
+        margin-top: 0;
+        font-size: 1rem;
+      }
+
+      nav.toc ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      nav.toc a {
+        text-decoration: none;
+        color: var(--muted);
+        padding: 8px;
+        border-radius: 10px;
+        display: block;
+        font-size: 0.95rem;
+      }
+
+      nav.toc a:hover {
+        background: var(--glass);
+        color: #fff;
+      }
+
+      article.card {
+        padding: 26px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.01),
+          rgba(255, 255, 255, 0.005)
+        );
+        border-radius: 14px;
+      }
+
+      article h2 {
+        margin-top: 0;
+        font-size: 1.2rem;
+      }
+
+      section {
+        margin-bottom: 20px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      footer {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      /* HOME BUTTON */
+      .home-btn {
+        display: block;
+        width: 210px;
+        margin: 20px auto 0 auto;
+        padding: 11px 0;
+        text-align: center;
+        font-size: 0.98rem;
+        color: #050816;
+        background: #22c55e;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 600;
+        box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+        transition: 0.2s ease;
+      }
+      .home-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 10px 26px rgba(34, 197, 94, 0.6);
+      }
+
+      @media (max-width: 880px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        nav.toc {
+          position: static;
+        }
+        .container {
+          margin-top: 72px;
+        }
+      }
+
+      /* Print */
+      @media print {
+        body {
+          background: white;
+          color: black;
+        }
+        .container {
+          box-shadow: none;
+          background: white;
+          border-radius: 0;
+          margin: 0;
+        }
+        nav.toc,
+        .logo,
+        .back-btn,
+        .home-btn {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- BACK BUTTON -->
+    <button class="back-btn" onclick="history.back()">← Back</button>
+
+    <main class="container">
+      <header>
+        <div class="logo">S</div>
+        <div>
+          <h1>Terms & Conditions</h1>
+          <p class="lead">
+            Last updated: <span class="accent">January 1, 2025</span>
+          </p>
+        </div>
+      </header>
+
+      <div class="grid">
+        <!-- Sidebar -->
+        <nav class="toc">
+          <h3>On this page</h3>
+          <ul>
+            <li><a href="#intro">Introduction</a></li>
+            <li><a href="#account">Account Terms</a></li>
+            <li><a href="#payments">Payments & Refunds</a></li>
+            <li><a href="#usage">Acceptable Usage</a></li>
+            <li><a href="#copyright">Copyright & Content</a></li>
+            <li><a href="#liability">Limitation of Liability</a></li>
+            <li><a href="#termination">Termination</a></li>
+            <li><a href="#changes">Changes to Terms</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+
+        <!-- Content -->
+        <article class="card">
+          <h2>Skill Gateway — Terms & Conditions</h2>
+
+          <section id="intro">
+            <h3>1. Introduction</h3>
+            <p class="muted">
+              These Terms & Conditions govern your use of the Skill Gateway
+              platform, courses, and related services. By accessing or using our
+              website, you agree to comply with these terms.
+            </p>
+          </section>
+
+          <section id="account">
+            <h3>2. Account Terms</h3>
+            <ul class="muted">
+              <li>You must provide accurate and complete information.</li>
+              <li>
+                You are responsible for maintaining confidentiality of your
+                login details.
+              </li>
+              <li>
+                You must not share your account or distribute paid course
+                content.
+              </li>
+              <li>
+                Skill Gateway may suspend accounts involved in misuse or fraud.
+              </li>
+            </ul>
+          </section>
+
+          <section id="payments">
+            <h3>3. Payments & Refunds</h3>
+            <p class="muted">
+              Payments for Skill Gateway courses are processed securely via our
+              payment partners. Refunds are allowed only under conditions
+              mentioned on the specific course purchase page.
+            </p>
+          </section>
+
+          <section id="usage">
+            <h3>4. Acceptable Usage</h3>
+            <ul class="muted">
+              <li>You may not copy, resell, or redistribute our content.</li>
+              <li>
+                You may not use the platform to upload harmful or illegal
+                material.
+              </li>
+              <li>
+                Any attempt to hack, bypass, or misuse the system is strictly
+                prohibited.
+              </li>
+            </ul>
+          </section>
+
+          <section id="copyright">
+            <h3>5. Copyright & Intellectual Property</h3>
+            <p class="muted">
+              All videos, PDFs, lessons, graphics, and materials on Skill
+              Gateway are protected by copyright. Unauthorized distribution or
+              reproduction may lead to legal action.
+            </p>
+          </section>
+
+          <section id="liability">
+            <h3>6. Limitation of Liability</h3>
+            <p class="muted">
+              Skill Gateway is not liable for technical issues, data loss,
+              account misuse, or any indirect damages. We provide educational
+              services on an “as-is” basis without guarantees.
+            </p>
+          </section>
+
+          <section id="termination">
+            <h3>7. Termination</h3>
+            <p class="muted">
+              Skill Gateway may suspend or terminate your account if you violate
+              these terms or engage in harmful activities.
+            </p>
+          </section>
+
+          <section id="changes">
+            <h3>8. Changes to Terms</h3>
+            <p class="muted">
+              We may modify these Terms & Conditions anytime. Updated versions
+              will be posted on this page with a new “Last updated” date.
+            </p>
+          </section>
+
+          <section id="contact">
+            <h3>9. Contact</h3>
+            <p class="muted">For questions or support regarding these terms:</p>
+            <address class="muted">
+              Skill Gateway<br />
+              Legal Team<br />
+              support@skillgateway.com
+            </address>
+          </section>
+
+          <footer>
+            <small class="muted">
+              These Terms & Conditions are for general informational use. Please
+              consult legal experts for compliance requirements.
+            </small>
+          </footer>
+        </article>
+      </div>
+
+      <!-- HOME BUTTON -->
+      <a href="../home.html" class="home-btn">🏠 Go to Home</a>
+    </main>
+
+    <!-- Smooth Scroll Script -->
+    <script>
+      document.querySelectorAll("nav.toc a").forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          document
+            .querySelector(a.getAttribute("href"))
+            .scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+    </script>
+  </body>
+</html>

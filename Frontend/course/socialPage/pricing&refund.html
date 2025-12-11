@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pricing & Refund Policy | Skill Gateway</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg: #0f1724;
+        --card: #0b1220;
+        --muted: #98a0b3;
+        --accent: #7c5cff;
+        --glass: rgba(255, 255, 255, 0.04);
+        color-scheme: dark;
+        --radius: 18px;
+        --max-width: 1100px;
+        font-family: "Inter", system-ui;
+      }
+
+      * {
+        box-sizing: border-box;
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #071022 0%, #07162a 60%);
+        color: #e6eef8;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      /* Back Button */
+      .back-btn {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        padding: 8px 14px;
+        background: var(--accent);
+        color: #050816;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        z-index: 50;
+        transition: 0.18s ease;
+      }
+
+      .back-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
+      }
+
+      .container {
+        max-width: var(--max-width);
+        margin: 64px auto 48px auto;
+        padding: 28px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.02);
+        box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
+      }
+
+      header {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+
+      .logo {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, var(--accent), #4cc9f0);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #061226;
+        font-weight: 800;
+        font-size: 1.8rem;
+        box-shadow: 0 6px 20px rgba(124, 92, 255, 0.18);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.7rem;
+      }
+
+      p.lead {
+        margin: 6px 0 0;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 28px;
+        margin-top: 20px;
+      }
+
+      nav.toc {
+        background: var(--card);
+        padding: 18px;
+        border-radius: 14px;
+        position: sticky;
+        top: 28px;
+      }
+
+      nav.toc h3 {
+        margin-top: 0;
+        font-size: 1rem;
+      }
+
+      nav.toc ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      nav.toc a {
+        text-decoration: none;
+        color: var(--muted);
+        padding: 8px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        display: block;
+      }
+
+      nav.toc a:hover {
+        background: var(--glass);
+        color: #fff;
+      }
+
+      article.card {
+        padding: 26px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        border-radius: 14px;
+      }
+
+      article h2 {
+        margin-top: 0;
+        font-size: 1.2rem;
+      }
+
+      section {
+        margin-bottom: 20px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .pricing-table {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+        margin-top: 16px;
+      }
+
+      .price-card {
+        background: var(--card);
+        padding: 20px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        text-align: center;
+      }
+
+      .price-card h4 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .price {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 10px 0;
+        color: var(--accent);
+      }
+
+      .price-card ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        margin-top: 12px;
+        color: var(--muted);
+      }
+
+      .price-card ul li {
+        padding: 4px 0;
+        font-size: 0.9rem;
+      }
+
+      footer {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      /* Home Button */
+      .home-btn {
+        display: block;
+        width: 210px;
+        margin: 20px auto 0 auto;
+        padding: 11px 0;
+        text-align: center;
+        font-size: 0.98rem;
+        color: #050816;
+        background: #22c55e;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 600;
+        box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+        transition: 0.2s ease;
+      }
+
+      .home-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 10px 26px rgba(34, 197, 94, 0.6);
+      }
+
+      @media (max-width: 880px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        nav.toc {
+          position: static;
+        }
+        .container {
+          margin-top: 72px;
+        }
+      }
+
+      @media print {
+        nav.toc,
+        .logo,
+        .back-btn,
+        .home-btn {
+          display: none !important;
+        }
+        body {
+          background: #fff;
+          color: #000;
+        }
+        .container {
+          box-shadow: none;
+          border-radius: 0;
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- BACK BUTTON -->
+    <button class="back-btn" onclick="history.back()">← Back</button>
+
+    <main class="container">
+      <header>
+        <div class="logo">S</div>
+        <div>
+          <h1>Pricing & Refund Policy</h1>
+          <p class="lead">
+            Last updated: <span class="accent">January 1, 2025</span>
+          </p>
+        </div>
+      </header>
+
+      <div class="grid">
+        <nav class="toc">
+          <h3>On this page</h3>
+          <ul>
+            <li><a href="#pricing">Pricing Structure</a></li>
+            <li><a href="#payment">Payment Terms</a></li>
+            <li><a href="#refund">Refund Policy</a></li>
+            <li><a href="#eligibility">Refund Eligibility</a></li>
+            <li><a href="#nonrefundable">Non-Refundable Items</a></li>
+            <li><a href="#howtoapply">How to Apply for Refund</a></li>
+            <li><a href="#contact">Support</a></li>
+          </ul>
+        </nav>
+
+        <article class="card">
+          <h2>Skill Gateway — Pricing & Refund Policy</h2>
+
+          <!-- Pricing Structure -->
+          <section id="pricing">
+            <h3>1. Pricing Structure</h3>
+            <p class="muted">
+              Skill Gateway offers transparent, one-time payment pricing for all
+              our online courses and learning programs.
+            </p>
+
+            <div class="pricing-table">
+              <div class="price-card">
+                <h4>Basic Course</h4>
+                <p class="price">₹499</p>
+                <ul>
+                  <li>Lifetime Access</li>
+                  <li>Basic Notes</li>
+                  <li>Email Support</li>
+                </ul>
+              </div>
+
+              <div class="price-card">
+                <h4>Pro Course</h4>
+                <p class="price">₹999</p>
+                <ul>
+                  <li>All Basic Features</li>
+                  <li>Video Lectures</li>
+                  <li>Practice Questions</li>
+                </ul>
+              </div>
+
+              <div class="price-card">
+                <h4>Premium Course</h4>
+                <p class="price">₹1999</p>
+                <ul>
+                  <li>Everything in Pro</li>
+                  <li>Mock Tests</li>
+                  <li>1-to-1 Mentorship</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- Payment Terms -->
+          <section id="payment">
+            <h3>2. Payment Terms</h3>
+            <ul class="muted">
+              <li>
+                All payments are processed securely via authorized partners.
+              </li>
+              <li>
+                Once a course is purchased, access is usually granted within
+                minutes.
+              </li>
+              <li>
+                You must not share purchased content or misuse your account.
+              </li>
+            </ul>
+          </section>
+
+          <!-- Refund Policy -->
+          <section id="refund">
+            <h3>3. Refund Policy</h3>
+            <p class="muted">
+              Refunds are offered only in rare cases where the user qualifies
+              based on specific conditions mentioned below.
+            </p>
+          </section>
+
+          <!-- Eligibility -->
+          <section id="eligibility">
+            <h3>4. Refund Eligibility</h3>
+            <ul class="muted">
+              <li>You must request a refund within 24–48 hours of purchase.</li>
+              <li>
+                You should NOT have completed more than 10% of course content.
+              </li>
+              <li>
+                Valid proof of payment and purchase receipt must be provided.
+              </li>
+              <li>
+                Refund is applicable only for technical issues or duplicate
+                payments.
+              </li>
+            </ul>
+          </section>
+
+          <!-- Non-refundable -->
+          <section id="nonrefundable">
+            <h3>5. Non-Refundable Items</h3>
+            <ul class="muted">
+              <li>Downloaded PDFs, Notes, or Study Materials.</li>
+              <li>Courses purchased during special discounts or sales.</li>
+              <li>Live classes, workshops, or mentorship programs.</li>
+              <li>Cases where account misuse is detected.</li>
+            </ul>
+          </section>
+
+          <!-- Apply for Refund -->
+          <section id="howtoapply">
+            <h3>6. How to Apply for a Refund</h3>
+            <p class="muted">To raise a refund request, please email us:</p>
+            <p class="muted">
+              <strong>support@skillgateway.com</strong><br />
+              Include:
+            </p>
+            <ul class="muted">
+              <li>Registered name</li>
+              <li>Registered email</li>
+              <li>Course purchased</li>
+              <li>Payment screenshot</li>
+              <li>Reason for refund request</li>
+            </ul>
+          </section>
+
+          <!-- Contact -->
+          <section id="contact">
+            <h3>7. Support Contact</h3>
+            <p class="muted">
+              For any questions or refund-related discussions, contact our
+              support team.
+            </p>
+            <address class="muted">
+              Skill Gateway<br />
+              Support Department<br />
+              support@skillgateway.com
+            </address>
+          </section>
+
+          <footer>
+            <small class="muted">
+              Refund policies may be updated anytime. Please review this page
+              regularly.
+            </small>
+          </footer>
+        </article>
+      </div>
+
+      <!-- HOME BUTTON -->
+      <a href="../home.html" class="home-btn">🏠 Go to Home</a>
+    </main>
+  </body>
+</html>

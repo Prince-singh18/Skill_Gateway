@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Metalness Blob</title>
+    <style>
+      body {
+        margin: 0;
+        background: #2d1650;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+      #overlayText {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: sans-serif;
+        font-size: 3rem;
+        font-weight: 400;
+        color: white;
+        pointer-events: none;
+      }
+    </style>
+    <!-- Importmap for modern module loading -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="overlayText">Metalness</div>
+
+    <script type="module">
+      import * as THREE from "three";
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+      let scene, camera, renderer, controls, blob, clock;
+
+      init();
+      animate();
+
+      function init() {
+        clock = new THREE.Clock();
+
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color("#2d1650");
+
+        camera = new THREE.PerspectiveCamera(
+          45,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          100
+        );
+        camera.position.set(0, 0, 6);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // Lights
+        const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambient);
+
+        const directional = new THREE.DirectionalLight(0xffffff, 1);
+        directional.position.set(5, 5, 5);
+        scene.add(directional);
+
+        // Environment Map for reflections
+        const cubeLoader = new THREE.CubeTextureLoader();
+        const envMap = cubeLoader.load([
+          "https://threejs.org/examples/textures/cube/Bridge2/posx.jpg",
+          "https://threejs.org/examples/textures/cube/Bridge2/negx.jpg",
+          "https://threejs.org/examples/textures/cube/Bridge2/posy.jpg",
+          "https://threejs.org/examples/textures/cube/Bridge2/negy.jpg",
+          "https://threejs.org/examples/textures/cube/Bridge2/posz.jpg",
+          "https://threejs.org/examples/textures/cube/Bridge2/negz.jpg",
+        ]);
+        scene.environment = envMap;
+
+        // Blob geometry
+        const geometry = new THREE.SphereGeometry(1.5, 128, 128);
+        const material = new THREE.MeshStandardMaterial({
+          metalness: 1.0,
+          roughness: 0.2,
+          envMapIntensity: 1.5,
+          color: new THREE.Color(0xffffff),
+          side: THREE.DoubleSide,
+        });
+        blob = new THREE.Mesh(geometry, material);
+        scene.add(blob);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableZoom = false;
+        controls.enablePan = false;
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        const elapsed = clock.getElapsedTime();
+
+        // Vertex distortion for blob-like effect
+        const position = blob.geometry.attributes.position;
+        const vertex = new THREE.Vector3();
+        for (let i = 0; i < position.count; i++) {
+          vertex.fromBufferAttribute(position, i);
+          const offset = vertex
+            .clone()
+            .normalize()
+            .multiplyScalar(
+              0.2 * Math.sin(elapsed + vertex.x * 3 + vertex.y * 3)
+            );
+          position.setXYZ(
+            i,
+            vertex.x + offset.x,
+            vertex.y + offset.y,
+            vertex.z + offset.z
+          );
+        }
+        position.needsUpdate = true;
+        blob.geometry.computeVertexNormals();
+
+        blob.rotation.y += 0.003;
+
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    </script>
+  </body>
+</html>

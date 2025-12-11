@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Three.js Domination Course</title>
+    <link rel="stylesheet" href="course2.css" />
+    <!-- ✅ Font Awesome CDN Added -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/Frontend/alerts/custom-alert.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: black;
+        overflow-y: scroll;
+        scroll-behavior: smooth;
+      }
+
+      section {
+        min-height: 100vh;
+        position: relative;
+      }
+
+      canvas {
+        display: block;
+      }
+
+      .rotate-180 {
+        transform: rotate(180deg);
+        transition: transform 0.3s ease;
+      }
+
+      /* ✅ Flag canvas */
+      #flag-canvas {
+        width: 100%;
+        height: auto;
+        max-width: 600px;
+        aspect-ratio: 16/10;
+      }
+      #flag-section .right-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ✅ Iframe projects */
+      .project-frame {
+        width: 100%;
+        height: 90vh;
+        border: none;
+        display: block;
+      }
+      .project-title {
+        color: white;
+        text-align: center;
+        font-size: 2rem;
+        padding: 1rem 0;
+      }
+
+      /* ✅ Scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #555;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <header class="header">
+      <a href="#home" class="logo">SKILLGET <span>WAY</span></a>
+      <nav class="navbar">
+        <a href="../home.html" class="active">Home</a>
+        <a href="#flag-section">About</a>
+        <a href="#details">Details</a>
+        <a href="#contact-footer">Contact</a>
+      </nav>
+      <!-- ✅ Mobile Menu Toggle -->
+      <div class="menu-icon" id="menu-icon">
+        <i class="fas fa-bars"></i>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="course-hero-3d">
+      <canvas id="threejs-bg"></canvas>
+      <div class="hero-3d-content">
+        <h1>Introducing <span>Three.js Domination</span></h1>
+        <p>Create web experiences people won't believe.</p>
+        <div class="hero-buttons">
+          <div class="hero-buttons">
+            <button class="btn-primary" id="three-buy-btn">
+              Buy Now ₹2499
+            </button>
+            <a href="#details" class="btn-secondary">See Details ↓</a>
+          </div>
+          <script>
+            const BASE_URL = "http://localhost:5000";
+            const COURSE_ID = 2; // course2
+
+            async function handleBuyClick(e) {
+              e.preventDefault();
+
+              try {
+                const res = await fetch(
+                  `${BASE_URL}/api/check-purchase/${COURSE_ID}`,
+                  {
+                    credentials: "include",
+                  }
+                );
+                const data = await res.json();
+
+                if (data.purchased) {
+                  alert(
+                    "You’re already enrolled in this course.\nPlease continue from your Dashboard → My Courses."
+                  );
+                } else {
+                  window.location.href =
+                    "/Frontend/Billing/checkbox.html?courseId=2";
+                }
+              } catch (err) {
+                console.error(err);
+                window.location.href =
+                  "/Frontend/Billing/checkbox.html?courseId=2"; // fallback
+              }
+            }
+
+            document
+              .getElementById("three-buy-btn") // 🔥 correct id
+              .addEventListener("click", handleBuyClick);
+          </script>
+        </div>
+      </div>
+    </section>
+
+    <!-- 🚩 Flag Waving Section -->
+    <section id="flag-section">
+      <div class="flag-container">
+        <div class="flag-left">
+          <h2 class="flag-subtitle">Normal Is Boring</h2>
+          <h1 class="flag-title">Don't<br />make<br />normal.</h1>
+          <p class="flag-description">
+            At Prince, we don't settle for ordinary. You've got one life to make
+            an impact—make it matter.
+          </p>
+        </div>
+        <div class="right-content">
+          <canvas id="flag-canvas"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- 🌍 Project 1 -->
+    <section class="project-section">
+      <h2 class="project-title">🌍 Project 1: Earth</h2>
+      <iframe src="earth.html" class="project-frame"></iframe>
+    </section>
+
+    <!-- 🚩 Project 2 -->
+    <section class="project-section">
+      <h2 class="project-title">🚩 Project 2: Flag</h2>
+      <iframe src="fake2log.html" class="project-frame"></iframe>
+    </section>
+
+    <!-- 🌌 Project 3 -->
+    <section class="project-section">
+      <h2 class="project-title">🌌 Project 3: FrameCollection</h2>
+      <iframe src="fake3.html" class="project-frame"></iframe>
+    </section>
+
+    <!-- Course Details -->
+    <section id="details">
+      <div class="details-container">
+        <h1 class="details-main-title">Dominate.</h1>
+        <h2 class="details-subtitle">From Start To Victory.</h2>
+
+        <div class="accordion">
+          <div class="accordion-item">
+            <div
+              class="accordion-header"
+              onclick="toggleSection('threejs-content')"
+            >
+              <h3>Three.js Fundamentals</h3>
+              <span id="threejs-content-icon" class="accordion-icon"
+                >&#9660;</span
+              >
+            </div>
+            <div id="threejs-content" class="accordion-content">
+              <p>
+                Master Three.js fundamentals including scene setup, meshes,
+                geometries, materials, lighting systems, and camera controls.
+                Build stunning 3D experiences from scratch.
+              </p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <div
+              class="accordion-header"
+              onclick="toggleSection('shader-content')"
+            >
+              <h3>Shader Programming</h3>
+              <span id="shader-content-icon" class="accordion-icon"
+                >&#9660;</span
+              >
+            </div>
+            <div id="shader-content" class="accordion-content">
+              <p>
+                Dive deep into GLSL shaders. Learn vertex and fragment shaders,
+                create custom materials, and build jaw-dropping visual effects
+                that set you apart.
+              </p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <div
+              class="accordion-header"
+              onclick="toggleSection('animation-content')"
+            >
+              <h3>Advanced Animation</h3>
+              <span id="animation-content-icon" class="accordion-icon"
+                >&#9660;</span
+              >
+            </div>
+            <div id="animation-content" class="accordion-content">
+              <p>
+                Create smooth, performant animations using
+                requestAnimationFrame, GSAP integration, and physics-based
+                motion. Bring your 3D worlds to life.
+              </p>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <div
+              class="accordion-header"
+              onclick="toggleSection('performance-content')"
+            >
+              <h3>Performance Optimization</h3>
+              <span id="performance-content-icon" class="accordion-icon"
+                >&#9660;</span
+              >
+            </div>
+            <div id="performance-content" class="accordion-content">
+              <p>
+                Learn industry best practices for optimization: instancing, LOD,
+                texture compression, and efficient rendering techniques for
+                smooth 60fps experiences.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact-footer" class="footer">
+      <div class="footer-top">
+        <p class="footer-social-title">Let's connect with our socials</p>
+        <div class="footer-socials">
+          <div class="social-icons">
+            <a href="https://www.instagram.com/" target="_blank"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a href="https://www.linkedin.com/" target="_blank"
+              ><i class="fab fa-linkedin"></i
+            ></a>
+            <a href="https://discord.com/" target="_blank"
+              ><i class="fab fa-discord"></i
+            ></a>
+            <a href="https://www.youtube.com/" target="_blank"
+              ><i class="fab fa-youtube"></i
+            ></a>
+            <a href="https://twitter.com/" target="_blank"
+              ><i class="fab fa-twitter"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+
+      <hr class="footer-divider" />
+
+      <div class="footer-links">
+        <div class="column">
+          <h4>COMPANY</h4>
+          <ul>
+            <li><a href="../socialPage/about.html">About Us</a></li>
+            <li><a href="../socialPage/support.html">Support</a></li>
+            <li><a href="../socialPage/privacy.html">Privacy Policy</a></li>
+            <li>
+              <a href="../socialPage/Term&condition.html"
+                >Terms and Condition</a
+              >
+            </li>
+            <li>
+              <a href="../socialPage/pricing&refund.html">Pricing and Refund</a>
+            </li>
+          </ul>
+        </div>
+        <div class="column">
+          <h4>COMMUNITY</h4>
+          <ul>
+            <li><a href="#">Discord</a></li>
+          </ul>
+        </div>
+        <div class="column">
+          <h4>Get In Touch</h4>
+          <p>+91 8982809968</p>
+          <p>+91 7024136831</p>
+          <p>
+            <a href="mailto:hello@princesingh.com">hello@princesingh.com</a>
+          </p>
+          <p>HIG - 89 TATIBANDH,<br />RAIPUR(CG), 492099</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Custom Alert -->
+    <div id="ps-alert-overlay" class="ps-alert-hidden">
+      <div id="ps-alert-box">
+        <div id="ps-alert-title">Message</div>
+        <div id="ps-alert-message"></div>
+        <button id="ps-alert-btn">OK</button>
+      </div>
+    </div>
+
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+
+    <script>
+      /* ---------------- Hero Section BG ---------------- */
+      const scene1 = new THREE.Scene();
+      const camera1 = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      const renderer1 = new THREE.WebGLRenderer({
+        canvas: document.querySelector("#threejs-bg"),
+        alpha: true,
+      });
+      renderer1.setSize(window.innerWidth, window.innerHeight);
+      camera1.position.z = 2;
+
+      const geometry1 = new THREE.TorusKnotGeometry(1, 0.4, 100, 16);
+      const material1 = new THREE.MeshStandardMaterial({ color: 0xfacc15 });
+      const torus = new THREE.Mesh(geometry1, material1);
+      scene1.add(torus);
+
+      const light1 = new THREE.PointLight(0xffffff, 1);
+      light1.position.set(2, 2, 2);
+      scene1.add(light1);
+
+      function animate1() {
+        requestAnimationFrame(animate1);
+        torus.rotation.x += 0.01;
+        torus.rotation.y += 0.01;
+        renderer1.render(scene1, camera1);
+      }
+      animate1();
+
+      window.addEventListener("resize", () => {
+        renderer1.setSize(window.innerWidth, window.innerHeight);
+        camera1.aspect = window.innerWidth / window.innerHeight;
+        camera1.updateProjectionMatrix();
+      });
+
+      /* ---------------- Flag Section ---------------- */
+      (() => {
+        const canvas = document.getElementById("flag-canvas");
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 100);
+        camera.position.z = 5;
+        scene.add(camera);
+
+        const loader = new THREE.TextureLoader();
+        loader.load(
+          "./flag2.png",
+          (texture) => {
+            const uniforms = {
+              time: { value: 0 },
+              uTexture: { value: texture },
+            };
+            const material = new THREE.ShaderMaterial({
+              uniforms,
+              vertexShader: `
+              uniform float time;
+              varying vec2 vUv;
+              void main() {
+                vUv = uv;
+                vec3 pos = position;
+                float waveX = sin(pos.x * 5.0 + time * 3.0) * 0.15;
+                float waveY = cos(pos.y * 5.0 + time * 2.0) * 0.1;
+                pos.z += waveX + waveY;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+              }
+            `,
+              fragmentShader: `
+              uniform sampler2D uTexture;
+              varying vec2 vUv;
+              void main() {
+                gl_FragColor = texture2D(uTexture, vUv);
+              }
+            `,
+              side: THREE.DoubleSide,
+            });
+            const geometry = new THREE.PlaneGeometry(4, 2.5, 100, 100);
+            const mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            const clock = new THREE.Clock();
+            function animate() {
+              requestAnimationFrame(animate);
+              uniforms.time.value = clock.getElapsedTime();
+              renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+              renderer.render(scene, camera);
+            }
+            animate();
+          },
+          undefined,
+          (error) => {
+            console.error("Error loading flag texture:", error);
+          }
+        );
+
+        window.addEventListener("resize", () => {
+          renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+          camera.aspect = 16 / 10;
+          camera.updateProjectionMatrix();
+        });
+      })();
+
+      /* ---------------- Toggle Section ---------------- */
+      function toggleSection(id) {
+        const content = document.getElementById(id);
+        const icon = document.getElementById(`${id}-icon`);
+
+        if (content && icon) {
+          content.classList.toggle("active");
+          icon.classList.toggle("rotate-180");
+        }
+      }
+
+      /* ---------------- Mobile Menu Toggle ---------------- */
+      const menuIcon = document.getElementById("menu-icon");
+      const navbar = document.querySelector(".navbar");
+
+      if (menuIcon) {
+        menuIcon.addEventListener("click", () => {
+          navbar.classList.toggle("active");
+        });
+      }
+
+      /* ---------------- Active Nav Link on Scroll ---------------- */
+      const sections = document.querySelectorAll("section");
+      const navLinks = document.querySelectorAll(".navbar a");
+
+      window.addEventListener("scroll", () => {
+        let current = "";
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+          if (window.pageYOffset >= sectionTop - 200) {
+            current = section.getAttribute("id");
+          }
+        });
+
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href").includes(current)) {
+            link.classList.add("active");
+          }
+        });
+      });
+    </script>
+    <script src="/Frontend/alerts/custom-alert.js"></script>
+  </body>
+</html>
