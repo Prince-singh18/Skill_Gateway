@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <title>Admin Panel - Skill Gateway</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/Frontend/loader/global-loader.css" />
+    <script src="/Frontend/loader/global-loader.js" defer></script>
 
     <style>
       :root {
@@ -631,6 +633,7 @@
           <button id="tab-payments" class="tab-btn">Payments</button>
           <button id="tab-support" class="tab-btn">Support Messages</button>
           <button id="tab-activity" class="tab-btn">User Activity</button>
+          <button id="tab-users" class="tab-btn">User Details</button>
           <button id="tab-hireus" class="tab-btn">Hire Us Requests</button>
         </div>
 
@@ -643,6 +646,28 @@
         <!-- Projects Section -->
         <section id="projectsSection" style="display: none">
           <h3>Project Submissions</h3>
+          <div
+            style="display: flex; justify-content: flex-end; margin-bottom: 8px"
+          >
+            <button
+              onclick="downloadProjectReport()"
+              style="
+                padding: 6px 14px;
+                font-size: 12px;
+                border-radius: 999px;
+                border: 1px solid rgba(34, 211, 238, 0.6);
+                background: rgba(15, 23, 42, 0.95);
+                color: #67e8f9;
+                cursor: pointer;
+                transition: all 0.2s ease;
+              "
+              onmouseover="this.style.background='rgba(34,211,238,0.15)'"
+              onmouseout="this.style.background='rgba(15,23,42,0.95)'"
+            >
+              📄 Download Report
+            </button>
+          </div>
+
           <div
             id="projectsError"
             style="display: none; color: var(--danger); margin-bottom: 0.5rem"
@@ -676,6 +701,28 @@
         <!-- Payments Section -->
         <section id="paymentsSection" style="display: none">
           <h3>Payments</h3>
+          <div
+            style="display: flex; justify-content: flex-end; margin-bottom: 8px"
+          >
+            <button
+              onclick="downloadPaymentReport()"
+              style="
+                padding: 6px 14px;
+                font-size: 12px;
+                border-radius: 999px;
+                border: 1px solid rgba(34, 197, 94, 0.6);
+                background: rgba(15, 23, 42, 0.95);
+                color: #86efac;
+                cursor: pointer;
+                transition: all 0.2s ease;
+              "
+              onmouseover="this.style.background='rgba(34,197,94,0.15)'"
+              onmouseout="this.style.background='rgba(15,23,42,0.95)'"
+            >
+              💰 Download Report
+            </button>
+          </div>
+
           <div
             style="
               font-size: 0.8rem;
@@ -768,6 +815,65 @@
                 </tr>
               </thead>
               <tbody id="activityTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="usersSection" style="display: none">
+          <h3>User Details</h3>
+          <div
+            style="display: flex; justify-content: flex-end; margin-bottom: 8px"
+          >
+            <button
+              onclick="downloadUserReport()"
+              style="
+                padding: 6px 14px;
+                font-size: 12px;
+                border-radius: 999px;
+                border: 1px solid rgba(59, 130, 246, 0.6);
+                background: rgba(15, 23, 42, 0.95);
+                color: #93c5fd;
+                cursor: pointer;
+                transition: all 0.2s ease;
+              "
+              onmouseover="this.style.background='rgba(59,130,246,0.15)'"
+              onmouseout="this.style.background='rgba(15,23,42,0.95)'"
+            >
+              👤 Download Report
+            </button>
+          </div>
+
+          <div
+            id="usersSummary"
+            style="
+              font-size: 0.8rem;
+              color: var(--text-soft);
+              margin-bottom: 6px;
+            "
+          >
+            Total Users: <strong id="totalUsers">0</strong>
+          </div>
+
+          <div id="usersLoading" class="loader" style="display: none">
+            <div class="spinner"></div>
+          </div>
+
+          <div
+            id="usersError"
+            style="display: none; color: var(--danger)"
+          ></div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Joined</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody"></tbody>
             </table>
           </div>
         </section>
@@ -865,6 +971,7 @@
           "payments",
           "support",
           "activity",
+          "users",
           "hireus",
         ];
 
@@ -881,6 +988,9 @@
             section.style.display = "none";
           }
         });
+        if (tab === "users") loadUsers();
+        if (tab === "projects") loadProjects();
+        if (tab === "payments") loadPayments();
       }
 
       // ---------- DATA LOADERS ----------
@@ -1086,12 +1196,18 @@
                 <td>${createdAt}</td>
                 <td>
                   <div class="table-actions">
-                    <button class="btn-secondary" data-action="APPROVE" ${
-                      isPending ? "" : "disabled"
-                    }>Approve</button>
-                    <button class="btn-secondary" data-action="REJECT" ${
-                      isPending ? "" : "disabled"
-                    }>Reject</button>
+                  <button class="btn-secondary" onclick="updatePaymentStatus(${
+                    p.id
+                  }, 'APPROVED')">
+  Approve
+</button>
+
+<button class="btn-secondary" onclick="updatePaymentStatus(${
+                p.id
+              }, 'REJECTED')">
+  Reject
+</button>
+
                   </div>
                 </td>
               `;
@@ -1137,7 +1253,10 @@
             "Content-Type": "application/json",
             Authorization: "Bearer " + token,
           },
-          body: JSON.stringify({ id, status }),
+          body: JSON.stringify({
+            id: id,
+            status: status.toUpperCase(),
+          }),
         })
           .then((res) => res.json())
           .then((data) => {
@@ -1322,6 +1441,85 @@
           });
       }
 
+      /*--------------user loader function---------------*/
+      function loadUsers() {
+        const token = localStorage.getItem("token");
+        const tbody = document.getElementById("usersTableBody");
+        const loading = document.getElementById("usersLoading");
+        const errorBox = document.getElementById("usersError");
+
+        tbody.innerHTML = "";
+        loading.style.display = "flex";
+        errorBox.style.display = "none";
+
+        fetch(BACKEND_BASE_URL + "/admin/users", {
+          headers: { Authorization: "Bearer " + token },
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to load users");
+            return res.json();
+          })
+          .then((data) => {
+            loading.style.display = "none";
+            document.getElementById("totalUsers").textContent =
+              data.totalUsers || 0;
+
+            if (!data.users || data.users.length === 0) {
+              tbody.innerHTML = "<tr><td colspan='4'>No users found.</td></tr>";
+              return;
+            }
+
+            data.users.forEach((u, index) => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${u.username || "N/A"}</td>
+          <td>${u.email}</td>
+          <td>${new Date(u.created_at).toLocaleDateString()}</td>
+        `;
+              tbody.appendChild(tr);
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            loading.style.display = "none";
+            errorBox.textContent = "Error loading user details.";
+            errorBox.style.display = "block";
+          });
+      }
+
+      ///////////////////////// pdf download logical part /////////////////////////////
+
+      function downloadProjectReport() {
+        const token = localStorage.getItem("token");
+        window.open(
+          `http://localhost:5000/admin/reports/projects?token=${token}`,
+          "_blank"
+        );
+      }
+
+      function downloadPaymentReport() {
+        const token = localStorage.getItem("token");
+        window.open(
+          `http://localhost:5000/admin/reports/payments?token=${token}`,
+          "_blank"
+        );
+      }
+
+      function downloadUserReport() {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          alert("Admin not logged in");
+          return;
+        }
+
+        window.open(
+          `http://localhost:5000/admin/reports/users?token=${token}`,
+          "_blank"
+        );
+      }
+
       // ---------- PROJECT MODAL ----------
 
       function openProjectModal(project) {
@@ -1400,9 +1598,14 @@
             setActiveTab("activity");
             loadUserActivity();
           },
+          "tab-users": () => {
+            setActiveTab("users");
+            loadUserActivity();
+          },
           "tab-hireus": () => {
             setActiveTab("hireus");
-            loadHireRequests();cd
+            loadHireRequests();
+            cd;
           },
         };
 

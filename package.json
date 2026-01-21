@@ -20,17 +20,19 @@
     "express-session": "^1.18.1",
     "express-validator": "^7.3.1",
     "firebase": "^11.10.0",
-    "firebase-admin": "^13.4.0",
+    "firebase-admin": "^13.6.0",
     "helmet": "^8.1.0",
+    "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "mysql2": "^3.15.3",
-    "nodemailer": "^7.0.5",
+    "nodemailer": "^7.0.12",
     "nodemailer-mailjet-transport": "^1.0.4",
     "openai": "^6.9.1",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "pdfkit": "^0.17.2"
   },
   "compilerOptions": {
     "target": "es2020",

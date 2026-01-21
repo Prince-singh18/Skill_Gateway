@@ -1,6 +1,7 @@
 // src/CoursePlayer.jsx
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import "./CoursePlayer.css";
 
 const API_BASE = "http://localhost:5000";
 
@@ -12,14 +13,14 @@ const api = axios.create({
 
 export default function CoursePlayer({ courseId, onClose, onProgressUpdate }) {
   const [loading, setLoading] = useState(true);
-  const [outline, setOutline] = useState(null); // { course, sections, firstLessonId }
+  const [outline, setOutline] = useState(null);
   const [currentLesson, setCurrentLesson] = useState(null);
   const [currentLessonId, setCurrentLessonId] = useState(null);
   const [savingProgress, setSavingProgress] = useState(false);
 
   const videoRef = useRef(null);
 
-  // Outline load
+  // LOAD OUTLINE
   useEffect(() => {
     let cancelled = false;
 
@@ -29,12 +30,11 @@ export default function CoursePlayer({ courseId, onClose, onProgressUpdate }) {
       if (!cancelled) {
         if (res.status === 200) {
           setOutline(res.data);
-          const initialLessonId = res.data.firstLessonId;
-          if (initialLessonId) {
-            setCurrentLessonId(initialLessonId);
+          if (res.data.firstLessonId) {
+            setCurrentLessonId(res.data.firstLessonId);
           }
         } else {
-          console.error("Outline load error:", res.data);
+          console.error("Outline error:", res.data);
         }
         setLoading(false);
       }
@@ -46,28 +46,22 @@ export default function CoursePlayer({ courseId, onClose, onProgressUpdate }) {
     };
   }, [courseId]);
 
-  // Current lesson load
+  // LOAD LESSON
   useEffect(() => {
     if (!currentLessonId) return;
-
     let cancelled = false;
 
     async function loadLesson() {
       const res = await api.get(`/api/dashboard/lessons/${currentLessonId}`);
-      if (!cancelled) {
-        if (res.status === 200) {
-          setCurrentLesson(res.data);
+      if (!cancelled && res.status === 200) {
+        setCurrentLesson(res.data);
+        setTimeout(() => {
           if (videoRef.current) {
-            videoRef.current.currentTime = 0;
-            setTimeout(() => {
-              try {
-                videoRef.current.play().catch(() => {});
-              } catch (e) {}
-            }, 50);
+            videoRef.current.pause();
+            videoRef.current.load();
+            videoRef.current.play().catch(() => {});
           }
-        } else {
-          console.error("Lesson load error:", res.data);
-        }
+        }, 80);
       }
     }
 
@@ -77,15 +71,15 @@ export default function CoursePlayer({ courseId, onClose, onProgressUpdate }) {
     };
   }, [currentLessonId]);
 
-  // Progress helper
+  // PROGRESS
   async function sendProgress({ completed }) {
     if (!currentLesson) return;
     setSavingProgress(true);
-    try {
-      const watchedSeconds =
-        (videoRef.current && Math.floor(videoRef.current.currentTime)) || 0;
 
-      const res = await api.post(
+    try {
+      const watchedSeconds = Math.floor(videoRef.current?.currentTime || 0);
+
+      await api.post(
         `/api/dashboard/lessons/${currentLesson.id}/progress`,
         {
           watchedSeconds,
@@ -93,39 +87,25 @@ export default function CoursePlayer({ courseId, onClose, onProgressUpdate }) {
         }
       );
 
-      if (res.status !== 200) {
-        console.error("Progress update error:", res.data);
-      } else {
-        const outlineRes = await api.get(
-          `/api/dashboard/courses/${courseId}/outline`
-        );
-        if (outlineRes.status === 200) {
-          setOutline(outlineRes.data);
-        }
+      const outlineRes = await api.get(
+        `/api/dashboard/courses/${courseId}/outline`
+      );
+      if (outlineRes.status === 200) setOutline(outlineRes.data);
 
-        if (typeof onProgressUpdate === "function") {
-          onProgressUpdate();
-        }
-      }
+      onProgressUpdate?.();
     } catch (err) {
-      console.error("Progress update error:", err);
+      console.error(err);
     } finally {
       setSavingProgress(false);
     }
   }
 
-  function handleEnded() {
-    sendProgress({ completed: true });
-  }
-
   if (loading || !outline) {
     return (
       <div className="player-overlay">
-        <div className="player-card">
-          <div className="player-header">
-            <span className="player-title">Loading course...</span>
-          </div>
-          <div className="player-body">Please wait...</div>
+        <div className="player-card player-card-loading">
+          <div className="player-skeleton-header" />
+          <div className="player-skeleton-body" />
         </div>
       </div>
     );
@@ -136,270 +116,114 @@ export default function CoursePlayer({ courseId, onClose, onProgressUpdate }) {
   return (
     <div className="player-overlay">
       <div className="player-card">
-        {/* Header */}
+        {/* HEADER */}
         <div className="player-header">
           <div>
-            <div className="player-badge">Course player</div>
+            <div className="player-badge">Course Player</div>
             <div className="player-title">{course.title}</div>
-            <div className="player-subtitle">
-              {course.level || "All levels"}
-            </div>
+            <div className="player-subtitle">{course.level}</div>
           </div>
           <button className="player-close-btn" onClick={onClose}>
             ✕ Close
           </button>
         </div>
 
-        {/* Layout */}
+        {/* LAYOUT */}
         <div className="player-layout">
-          {/* LEFT: LESSON LIST */}
+          {/* SIDEBAR */}
           <aside className="player-sidebar">
-            <div className="sidebar-title">Chapters</div>
-            <div className="sidebar-list">
-              {sections.map((sec) => (
-                <div key={sec.id} className="sidebar-section">
-                  <div className="sidebar-section-title">{sec.title}</div>
-                  {sec.lessons.map((lesson) => {
-                    const isActive = lesson.id === currentLessonId;
-                    return (
-                      <button
-                        key={lesson.id}
-                        className={
-                          "sidebar-lesson" +
-                          (isActive ? " sidebar-lesson-active" : "") +
-                          (lesson.isCompleted ? " sidebar-lesson-done" : "")
-                        }
-                        onClick={() => setCurrentLessonId(lesson.id)}
-                      >
-                        <div className="sidebar-lesson-main">
-                          <span className="lesson-title">{lesson.title}</span>
-                          {lesson.isCompleted && (
-                            <span className="lesson-chip">Done</span>
-                          )}
-                        </div>
-                        <div className="lesson-meta">
-                          {lesson.duration_seconds
-                            ? Math.round(lesson.duration_seconds / 60) + " min"
-                            : ""}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              ))}
+            <div className="sidebar-header">
+              <span className="sidebar-dot red" />
+              <span className="sidebar-dot yellow" />
+              <span className="sidebar-dot green" />
+              <span className="sidebar-label">Course Outline</span>
             </div>
+
+            {sections.map((sec) => (
+              <div key={sec.id} className="sidebar-section">
+                <div className="sidebar-section-title">{sec.title}</div>
+                <div className="sidebar-lessons">
+                  {sec.lessons.map((lesson) => (
+                    <button
+                      key={lesson.id}
+                      className={
+                        "sidebar-lesson" +
+                        (lesson.id === currentLessonId
+                          ? " sidebar-lesson-active"
+                          : "")
+                      }
+                      onClick={() => setCurrentLessonId(lesson.id)}
+                    >
+                      <div className="sidebar-lesson-main">
+                        <span className="sidebar-lesson-bullet" />
+                        <span className="sidebar-lesson-title">
+                          {lesson.title}
+                        </span>
+                      </div>
+                      {lesson.isCompleted && (
+                        <span className="sidebar-lesson-status">✓</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </aside>
 
-          {/* CENTER: VIDEO */}
+          {/* MAIN / VIDEO */}
           <main className="player-main">
-            {currentLesson ? (
+            {currentLesson && (
               <>
-                <div className="current-lesson-title">
-                  {currentLesson.title}
+                <div className="player-main-header">
+                  <h3 className="player-main-title">
+                    {currentLesson.title}
+                  </h3>
+                  {savingProgress && (
+                    <span className="player-saving-pill">Saving...</span>
+                  )}
                 </div>
-                <div className="video-wrapper">
+
+                <div className="player-video-wrapper">
+                  <div className="player-video-topbar">
+                    <span className="player-video-dot red" />
+                    <span className="player-video-dot yellow" />
+                    <span className="player-video-dot green" />
+                    <span className="player-video-label">Now Playing</span>
+                  </div>
                   <video
                     ref={videoRef}
-                    key={currentLesson.id}
-                    src={currentLesson.video_url}
                     controls
                     autoPlay
-                    muted
+                    playsInline
+                    preload="auto"
                     className="player-video"
-                    onEnded={handleEnded}
-                  />
+                  >
+                    <source
+                      src={`http://localhost:5000${currentLesson.video_url}`}
+                      type="video/mp4"
+                    />
+                  </video>
                 </div>
 
                 <div className="player-controls-row">
                   <button
-                    className="primary-btn"
-                    disabled={savingProgress}
+                    className="player-btn secondary"
                     onClick={() => sendProgress({ completed: false })}
                   >
-                    {savingProgress ? "Saving..." : "Save progress"}
+                    Save Progress
                   </button>
                   <button
-                    className="secondary-btn"
-                    disabled={savingProgress}
+                    className="player-btn primary"
                     onClick={() => sendProgress({ completed: true })}
                   >
-                    Mark as complete
+                    Mark Complete
                   </button>
                 </div>
               </>
-            ) : (
-              <div>No lesson selected</div>
             )}
           </main>
         </div>
       </div>
-
-      {/* Inline CSS for player */}
-      <style jsx>{`
-        .player-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(15, 23, 42, 0.45);
-          backdrop-filter: blur(8px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 50;
-        }
-        .player-card {
-          width: 96%;
-          max-width: 1200px;
-          max-height: 90vh;
-          background: #f9fafb;
-          border-radius: 24px;
-          box-shadow: 0 30px 80px rgba(15, 23, 42, 0.35);
-          display: flex;
-          flex-direction: column;
-          padding: 18px 20px 20px;
-        }
-        .player-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 12px;
-        }
-        .player-badge {
-          font-size: 11px;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: #6b7280;
-        }
-        .player-title {
-          font-size: 20px;
-          font-weight: 600;
-          color: #111827;
-        }
-        .player-subtitle {
-          font-size: 13px;
-          color: #6b7280;
-        }
-        .player-close-btn {
-          border: none;
-          border-radius: 999px;
-          padding: 6px 14px;
-          font-size: 13px;
-          background: #fee2e2;
-          color: #b91c1c;
-          cursor: pointer;
-        }
-        .player-layout {
-          display: grid;
-          grid-template-columns: 260px minmax(0, 1fr);
-          gap: 16px;
-          flex: 1;
-          min-height: 0;
-        }
-        .player-sidebar {
-          background: #f3f4f6;
-          border-radius: 18px;
-          padding: 10px 10px 12px;
-          overflow-y: auto;
-        }
-        .sidebar-title {
-          font-size: 13px;
-          font-weight: 600;
-          margin-bottom: 6px;
-          color: #4b5563;
-        }
-        .sidebar-section {
-          margin-bottom: 8px;
-        }
-        .sidebar-section-title {
-          font-size: 12px;
-          font-weight: 600;
-          color: #6b7280;
-          margin-bottom: 4px;
-        }
-        .sidebar-lesson {
-          width: 100%;
-          border: none;
-          text-align: left;
-          border-radius: 10px;
-          padding: 6px 8px;
-          margin-bottom: 4px;
-          background: #ffffff;
-          cursor: pointer;
-          font-size: 12px;
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
-        .sidebar-lesson-active {
-          border: 1px solid #4f46e5;
-          box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.15);
-        }
-        .sidebar-lesson-done {
-          background: #ecfdf5;
-        }
-        .sidebar-lesson-main {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        .lesson-title {
-          font-size: 12px;
-          color: #111827;
-        }
-        .lesson-chip {
-          font-size: 10px;
-          padding: 2px 6px;
-          border-radius: 999px;
-          background: #bbf7d0;
-          color: #166534;
-        }
-        .lesson-meta {
-          font-size: 11px;
-          color: #9ca3af;
-        }
-        .player-main {
-          background: #ffffff;
-          border-radius: 18px;
-          padding: 10px 12px 14px;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-        }
-        .current-lesson-title {
-          font-size: 16px;
-          font-weight: 600;
-          margin-bottom: 8px;
-        }
-        .video-wrapper {
-          border-radius: 14px;
-          overflow: hidden;
-          background: #000;
-          flex: 1;
-          display: flex;
-        }
-        .player-video {
-          width: 100%;
-          height: 100%;
-          max-height: 420px;
-          object-fit: contain;
-          background: #000;
-        }
-        .player-controls-row {
-          margin-top: 10px;
-          display: flex;
-          gap: 10px;
-        }
-        @media (max-width: 900px) {
-          .player-card {
-            padding: 12px 12px 14px;
-          }
-          .player-layout {
-            grid-template-columns: 1fr;
-          }
-          .player-sidebar {
-            max-height: 200px;
-          }
-        }
-      `}</style>
     </div>
   );
 }

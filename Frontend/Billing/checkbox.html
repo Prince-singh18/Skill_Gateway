@@ -10,6 +10,8 @@
       rel="stylesheet"
     />
 
+    <link rel="stylesheet" href="/Frontend/alerts/custom-alert.css" />
+
     <style>
       * {
         box-sizing: border-box;
@@ -309,7 +311,11 @@
 
             <div class="qr-img-wrapper">
               <!-- apna original QR image path yaha laga dena -->
-              <img src="../assets/qr_code3js.jpeg" alt="UPI QR" class="qr-img" />
+              <img
+                src="../assets/qr_code3js.jpeg"
+                alt="UPI QR"
+                class="qr-img"
+              />
             </div>
 
             <div style="font-size: 12px; margin-top: 4px">
@@ -333,6 +339,15 @@
             4. Once we verify, your course will be unlocked in your dashboard.
           </p>
         </div>
+      </div>
+    </div>
+
+    <!-- Custom Alert -->
+    <div id="ps-alert-overlay" class="ps-alert-hidden">
+      <div id="ps-alert-box">
+        <div id="ps-alert-title">Message</div>
+        <div id="ps-alert-message"></div>
+        <button id="ps-alert-btn">OK</button>
       </div>
     </div>
 
@@ -390,11 +405,12 @@
             const data = await res.json();
 
             if (data.success) {
-              alert(
-                "Payment details submitted successfully. We will verify and activate your course soon."
+              await niceAlert(
+                "Payment details submitted successfully. We will verify and activate your course soon.",
+                "Payment Submitted"
               );
 
-              // ✅ SUCCESS PE USER DASHBOARD OPEN
+              // ✅ OK click ke baad hi dashboard open
               window.location.href = DASHBOARD_URL;
             } else {
               alert(data.message || "Something went wrong. Please try again.");
@@ -409,5 +425,6 @@
           }
         });
     </script>
+    <script src="/Frontend/alerts/custom-alert.js"></script>
   </body>
 </html>

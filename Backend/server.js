@@ -11,24 +11,80 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const fs = require("fs");
 const multer = require("multer");
-const OpenAI = require("openai");
-const openai = new OpenAI({
+const PDFDocument = require("pdfkit");
+const invoiceRoutes = require("./routes/invoice.js");
+const otpStore = {};
+
+//const OpenAI = require("openai");
+/*const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-});
+}); */
 
 const app = express();
-const otpStore = new Map(); // email => { otp, expires }
-
+//app.use("/videos", express.static(path.join(__dirname, "assets/videos")));
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
+//const app = express();
+// pehle:
+// ===== VIDEO STATIC (TOP PRIORITY) =====
+app.get("/assets/videos/:filename", (req, res) => {
+  const filePath = path.join(
+    __dirname,
+    "assets",
+    "videos",
+    req.params.filename
+  );
 
+  console.log("🎥 VIDEO REQUEST:", filePath);
+
+  if (!fs.existsSync(filePath)) {
+    console.log("❌ NOT FOUND:", filePath);
+    return res.status(404).send("Video not found");
+  }
+
+  const stat = fs.statSync(filePath);
+  const fileSize = stat.size;
+  const range = req.headers.range;
+
+  if (range) {
+    const parts = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+
+    const chunkSize = end - start + 1;
+    const stream = fs.createReadStream(filePath, { start, end });
+
+    res.writeHead(206, {
+      "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+      "Accept-Ranges": "bytes",
+      "Content-Length": chunkSize,
+      "Content-Type": "video/mp4",
+    });
+
+    stream.pipe(res);
+  } else {
+    res.writeHead(200, {
+      "Content-Length": fileSize,
+      "Content-Type": "video/mp4",
+    });
+    fs.createReadStream(filePath).pipe(res);
+  }
+});
+
+app.get("/__debug/files", (req, res) => {
+  const dir = path.join(__dirname, "assets", "videos");
+  const files = fs.readdirSync(dir);
+  res.json(files);
+});
+
+// ================== VIDEO STATIC (FINAL FIX) ==================
+app.use("/", express.static(path.join(__dirname, "Frontend")));
 // Serve dashboard/admin folders if present (optional)
 app.use("/dashboard", express.static(path.join(__dirname, "dashboard")));
 app.use("/admin", express.static(path.join(__dirname, "admin")));
-app.use("/", express.static(path.join(__dirname, "Frontend")));
 
 // Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-// Serve complete Frontend folder
+//Serve complete Frontend folder
 app.use(express.static(path.join(__dirname, "../Frontend")));
 app.use("/Frontend", express.static(path.join(__dirname, "../Frontend")));
 
@@ -134,7 +190,6 @@ passport.use(
       const email = profile.emails?.[0]?.value || "";
       const username = profile.displayName || `GoogleUser_${profile.id}`;
       const provider = "google";
-
       if (!email) {
         return done(new Error("No email from Google"), null);
       }
@@ -176,6 +231,17 @@ function verifyToken(req, res, next) {
     next();
   });
 }
+
+//================== nodemailer ======================//
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
 
 // ================== SESSION AUTH (USER) ==================
 function requireUserLogin(req, res, next) {
@@ -330,55 +396,6 @@ app.get("/logout", (req, res) => {
   });
 });
 
-// ================== PHONE LOGIN / REGISTER ==================
-app.post("/phone-login", (req, res) => {
-  const { phone } = req.body;
-  const username = `PhoneUser_${phone?.slice(-4) || "user"}`;
-
-  console.log("📞 Received phone login for:", phone);
-
-  if (!phone) {
-    console.error("❌ No phone number received");
-    return res.status(400).json({ message: "Phone number is required" });
-  }
-
-  db.query("SELECT * FROM users WHERE phone = ?", [phone], (err, results) => {
-    if (err) {
-      console.error("❌ SELECT error:", err.sqlMessage || err.message);
-      return res
-        .status(500)
-        .json({ message: "DB error (SELECT)", error: err.sqlMessage });
-    }
-
-    if (results.length > 0) {
-      console.log("✅ Existing user found:", results[0].username);
-      req.session.user = results[0];
-      return res.json({ success: true, message: "User logged in via phone" });
-    }
-
-    const insertSql =
-      "INSERT INTO users (username, phone, provider) VALUES (?, ?, ?)";
-    db.query(insertSql, [username, phone, "phone"], (err2, result) => {
-      if (err2) {
-        console.error("❌ INSERT FAILED:", err2.sqlMessage || err2.message);
-        return res.status(500).json({
-          message: "DB INSERT error",
-          sqlError: err2.sqlMessage || err2.message,
-        });
-      }
-
-      console.log("✅ Inserted phone user:", username);
-      req.session.user = {
-        id: result.insertId,
-        username,
-        phone,
-        provider: "phone",
-      };
-      res.json({ success: true, message: "New user registered via phone" });
-    });
-  });
-});
-
 // ================== GOOGLE AUTH ROUTES ==================
 app.get(
   "/auth/google",
@@ -403,7 +420,6 @@ fs.mkdirSync(projectsDir, { recursive: true });
 fs.mkdirSync(avatarsDir, { recursive: true });
 
 // Serve all uploads (projects + avatars)
-app.use("/uploads", express.static(uploadsRoot));
 
 // ================== PROJECT FILE UPLOAD (multer) ==================
 const projectStorage = multer.diskStorage({
@@ -519,7 +535,6 @@ app.post("/api/support", (req, res) => {
 // Admin: Get all support messages
 app.get("/admin/support", verifyToken, (req, res) => {
   const sql = "SELECT * FROM support_messages ORDER BY id DESC";
-
   db.query(sql, (err, results) => {
     if (err) {
       console.error("❌ DB Error fetching support messages:", err);
@@ -531,68 +546,112 @@ app.get("/admin/support", verifyToken, (req, res) => {
   });
 });
 
-// ================== PAYMENT REQUEST (UPI QR FLOW) ==================
-// ✅ Payment request – ab user ke session se linked
-app.post("/api/payments/create", requireUserLogin, (req, res) => {
-  const userId = req.session.user.id; // logged-in user
-  const { fullName, phone, email, courseTitle, courseId, amount, utr } =
-    req.body;
+////////////////////////           ///////////////////////////////////
+// ================== JWT FOR PDF DOWNLOAD (QUERY TOKEN) ==================
+function verifyTokenFromQuery(req, res, next) {
+  const token =
+    req.query.token ||
+    (req.headers.authorization && req.headers.authorization.split(" ")[1]);
 
-  if (!fullName || !phone || !email || !courseTitle || !amount || !utr) {
-    return res.status(400).json({
-      success: false,
-      message: "All fields are required",
-    });
+  if (!token) {
+    return res.status(403).json({ message: "No token provided" });
   }
 
-  const orderId = generateOrderId();
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: "Invalid token" });
+    }
+    req.user = user;
+    next();
+  });
+}
 
-  const sql = `
-    INSERT INTO payment_requests 
-      (order_id, user_id, full_name, phone, email, course_title, course_id, amount, utr) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+// ================== PAYMENT REQUEST (UPI QR FLOW) ==================
+// ✅ Payment request – ab user ke session se linked
+app.post("/api/payments/create", requireUserLogin, async (req, res) => {
+  try {
+    const userId = req.session.user.id; // logged-in user
+    const { fullName, phone, email, courseTitle, courseId, amount, utr } =
+      req.body;
 
-  db.query(
-    sql,
-    [
-      orderId,
-      userId,
-      fullName,
-      phone,
-      email,
-      courseTitle,
-      courseId || null,
-      amount,
-      utr,
-    ],
-    (err) => {
-      if (err) {
-        console.error("❌ Error saving payment request:", err);
-        return res.status(500).json({
-          success: false,
-          message: "Server error, please try again later",
-        });
-      }
-
-      // activity trace
-      try {
-        logActivity(
-          userId,
-          `Started payment request for "${courseTitle}" (Order ${orderId})`
-        );
-      } catch (e) {
-        console.error("logActivity error (ignored):", e);
-      }
-
-      return res.json({
-        success: true,
-        message:
-          "Payment details submitted successfully. We will verify and activate your course soon.",
-        orderId,
+    if (!fullName || !phone || !email || !courseTitle || !amount || !utr) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
       });
     }
-  );
+
+    // 🔒 CHECK: already pending payment?
+    const [pendingRows] = await dbPromise.query(
+      `SELECT id FROM payment_requests 
+       WHERE user_id = ? AND status = 'PENDING'
+       LIMIT 1`,
+      [userId]
+    );
+
+    if (pendingRows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        code: "PAYMENT_PENDING",
+        message:
+          "Your previous payment is under verification. Please wait until it is approved or rejected.",
+      });
+    }
+
+    const orderId = generateOrderId();
+
+    const sql = `
+      INSERT INTO payment_requests 
+        (order_id, user_id, full_name, phone, email, course_title, course_id, amount, utr, status) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING')
+    `;
+
+    db.query(
+      sql,
+      [
+        orderId,
+        userId,
+        fullName,
+        phone,
+        email,
+        courseTitle,
+        courseId || null,
+        amount,
+        utr,
+      ],
+      (err) => {
+        if (err) {
+          console.error("❌ Error saving payment request:", err);
+          return res.status(500).json({
+            success: false,
+            message: "Server error, please try again later",
+          });
+        }
+
+        try {
+          logActivity(
+            userId,
+            `Started payment request for "${courseTitle}" (Order ${orderId})`
+          );
+        } catch (e) {
+          console.error("logActivity error (ignored):", e);
+        }
+
+        return res.json({
+          success: true,
+          message:
+            "Payment details submitted successfully. We will verify and activate your course soon.",
+          orderId,
+        });
+      }
+    );
+  } catch (err) {
+    console.error("❌ /api/payments/create error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error, please try again later",
+    });
+  }
 });
 
 // ================== ADMIN: PAYMENTS LIST ==================
@@ -689,8 +748,7 @@ app.post("/admin/payments/update-status", verifyToken, async (req, res) => {
       });
     }
 
-    // ---------- APPROVED CASE (purana flow same rahe) ----------
-    // Course detect: pehle course_id, warna title se
+    // ---------- APPROVED CASE ----------
     let courseId = request.course_id;
 
     if (!courseId) {
@@ -807,6 +865,11 @@ app.get("/api/dashboard/profile", requireUserLogin, async (req, res) => {
       avatarUrl = user.avatar.startsWith("http")
         ? user.avatar
         : `http://localhost:5000${user.avatar}`;
+    } else {
+      const username = user.username || "User";
+      avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        username
+      )}&background=111827&color=fff`;
     }
 
     res.json({
@@ -882,22 +945,36 @@ app.get("/api/dashboard/courses", requireUserLogin, async (req, res) => {
 
   try {
     const [rows] = await dbPromise.query(
-      `SELECT 
-         e.id AS enrollment_id,
-         c.id AS course_id,
-         c.title,
-         c.description,
-         c.level,
-         e.progress,
-         e.last_lesson,
-         e.status,
-         e.enrolled_at
-       FROM enrollments e
-       JOIN courses c ON e.course_id = c.id
-       WHERE e.user_id = ?
-       ORDER BY e.enrolled_at DESC`,
+      `
+  SELECT
+    e.id AS enrollment_id,
+    c.id AS course_id,
+    c.title,
+    c.description,
+    c.level,
+    e.progress,
+    e.last_lesson,
+    e.status,
+    e.enrolled_at,
+
+    (
+      SELECT pr.id
+      FROM payment_requests pr
+      WHERE pr.user_id = e.user_id
+        AND pr.status = 'APPROVED'
+        AND pr.course_title = c.title
+      ORDER BY pr.created_at DESC
+      LIMIT 1
+    ) AS payment_id
+
+  FROM enrollments e
+  JOIN courses c ON e.course_id = c.id
+  WHERE e.user_id = ?
+  `,
       [userId]
     );
+
+    console.log("COURSES API ROWS:", rows); // 🔥 debug
 
     res.json(rows);
   } catch (err) {
@@ -1101,7 +1178,6 @@ app.post("/api/ai/skillbot", async (req, res) => {
       });
     }
 
-    // history safe bana lo
     const safeHistory = Array.isArray(history) ? history : [];
 
     const messages = [
@@ -1118,7 +1194,7 @@ app.post("/api/ai/skillbot", async (req, res) => {
     ];
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4.1-mini", // yahi use karo
+      model: "gpt-4.1-mini",
       messages,
       temperature: 0.6,
       max_tokens: 200,
@@ -1126,7 +1202,6 @@ app.post("/api/ai/skillbot", async (req, res) => {
 
     const reply = completion.choices?.[0]?.message?.content?.trim();
 
-    // agar kisi reason se reply empty aa jaye
     if (!reply) {
       return res.status(500).json({
         error: "no_reply",
@@ -1288,7 +1363,6 @@ app.get(
     }
 
     try {
-      // ✅ Check: kya user is course me enrolled hai?
       const [enrollRows] = await dbPromise.query(
         "SELECT 1 FROM enrollments WHERE user_id = ? AND course_id = ? LIMIT 1",
         [userId, courseId]
@@ -1300,7 +1374,6 @@ app.get(
           .json({ message: "You are not enrolled in this course" });
       }
 
-      // Course info
       const [courseRows] = await dbPromise.query(
         "SELECT id, title, description, level FROM courses WHERE id = ?",
         [courseId]
@@ -1309,7 +1382,6 @@ app.get(
         return res.status(404).json({ message: "Course not found" });
       }
 
-      // Sections + lessons
       const [rows] = await dbPromise.query(
         `SELECT 
            s.id AS section_id,
@@ -1327,7 +1399,6 @@ app.get(
         [courseId]
       );
 
-      // User ke complete lessons
       const [progressRows] = await dbPromise.query(
         `SELECT lesson_id, is_completed 
          FROM lesson_progress 
@@ -1340,7 +1411,6 @@ app.get(
         completedMap[p.lesson_id] = !!p.is_completed;
       });
 
-      // Group by sections
       const sectionsMap = {};
       rows.forEach((r) => {
         if (!sectionsMap[r.section_id]) {
@@ -1366,7 +1436,6 @@ app.get(
         (a, b) => a.order - b.order
       );
 
-      // First playable lesson
       let firstLessonId = null;
       for (const sec of sections) {
         if (sec.lessons.length) {
@@ -1394,12 +1463,10 @@ app.get("/api/check-purchase/:courseId", (req, res) => {
   const userId = req.session?.user?.id || req.user?.id || null;
   const courseId = parseInt(req.params.courseId, 10);
 
-  // Agar courseId hi galat hai
   if (!courseId) {
     return res.json({ purchased: false });
   }
 
-  // User logged in nahi hai → purchased: false
   if (!userId) {
     return res.json({ purchased: false });
   }
@@ -1460,7 +1527,6 @@ app.get(
 
       const lesson = rows[0];
 
-      // Check enrollment
       const [enrollRows] = await dbPromise.query(
         "SELECT 1 FROM enrollments WHERE user_id = ? AND course_id = ? LIMIT 1",
         [userId, lesson.course_id]
@@ -1494,7 +1560,6 @@ app.post(
     }
 
     try {
-      // Lesson + course info
       const [lessonRows] = await dbPromise.query(
         "SELECT id, course_id FROM lessons WHERE id = ?",
         [lessonId]
@@ -1504,7 +1569,6 @@ app.post(
       }
       const courseId = lessonRows[0].course_id;
 
-      // Enrollment check
       const [enrollRows] = await dbPromise.query(
         "SELECT id FROM enrollments WHERE user_id = ? AND course_id = ? LIMIT 1",
         [userId, courseId]
@@ -1516,7 +1580,6 @@ app.post(
       }
       const enrollmentId = enrollRows[0].id;
 
-      // Progress row insert/update
       const [progRows] = await dbPromise.query(
         "SELECT id FROM lesson_progress WHERE user_id = ? AND lesson_id = ?",
         [userId, lessonId]
@@ -1542,7 +1605,6 @@ app.post(
         );
       }
 
-      // Recalculate course progress
       const [[totalRow]] = await dbPromise.query(
         "SELECT COUNT(*) AS total_lessons FROM lessons WHERE course_id = ?",
         [courseId]
@@ -1594,7 +1656,6 @@ app.post("/api/hire", async (req, res) => {
   try {
     const { name, email, phone, org, subject, message } = req.body;
 
-    // Basic validation
     if (!name || !email || !message) {
       return res.status(400).json({
         success: false,
@@ -1638,6 +1699,7 @@ app.post("/api/hire", async (req, res) => {
     });
   }
 });
+
 // Admin: Hire Us requests
 app.get("/admin/hire-requests", verifyToken, (req, res) => {
   const sql = "SELECT * FROM hire_requests ORDER BY created_at DESC";
@@ -1652,39 +1714,6 @@ app.get("/admin/hire-requests", verifyToken, (req, res) => {
     res.json(results);
   });
 });
-
-// ================== USER ACTIVITY SYSTEM ==================
-app.get("/api/dashboard/activity", requireUserLogin, async (req, res) => {
-  const userId = req.session.user.id;
-
-  try {
-    const [rows] = await dbPromise.query(
-      `SELECT action AS text, 
-              DATE_FORMAT(created_at, '%d %b, %h:%i %p') AS time
-       FROM user_activity 
-       WHERE user_id = ?
-       ORDER BY created_at DESC
-       LIMIT 50`,
-      [userId]
-    );
-
-    res.json(rows);
-  } catch (err) {
-    console.error("❌ Activity fetch error:", err);
-    res.status(500).json({ message: "Error loading activity" });
-  }
-});
-
-// Helper to log activity
-function logActivity(userId, action) {
-  db.query(
-    "INSERT INTO user_activity (user_id, action) VALUES (?, ?)",
-    [userId, action],
-    (err) => {
-      if (err) console.error("Activity log error:", err);
-    }
-  );
-}
 
 // ================== ADMIN: USER ACTIVITY (ALL USERS) ==================
 app.get("/admin/user-activity", verifyToken, async (req, res) => {
@@ -1711,8 +1740,259 @@ app.get("/admin/user-activity", verifyToken, async (req, res) => {
   }
 });
 
+////////////////// Project submission////////////////////////////////
+
+app.get("/admin/reports/projects", verifyTokenFromQuery, async (req, res) => {
+  try {
+    const [projects] = await dbPromise.query(
+      "SELECT name, email, title, category, github, created_at FROM projects ORDER BY created_at DESC"
+    );
+
+    const doc = new PDFDocument({ margin: 40, size: "A4" });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=project_submissions_report.pdf"
+    );
+
+    doc.pipe(res);
+
+    doc.fontSize(18).text("Skill Gateway", { align: "center" });
+    doc.fontSize(14).text("Project Submissions Report", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(10).text(`Generated on: ${new Date().toLocaleString()}`);
+    doc.moveDown();
+
+    projects.forEach((p, i) => {
+      doc
+        .fontSize(11)
+        .text(`${i + 1}. ${p.name}`)
+        .fontSize(9)
+        .text(`Email: ${p.email}`)
+        .text(`Title: ${p.title}`)
+        .text(`Category: ${p.category}`)
+        .text(`GitHub: ${p.github || "N/A"}`)
+        .text(`Submitted: ${new Date(p.created_at).toLocaleString()}`)
+        .moveDown();
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error generating project report");
+  }
+});
+
+//////////////////// Payment pdf ///////////////////
+
+app.get("/admin/reports/payments", verifyTokenFromQuery, async (req, res) => {
+  try {
+    const [payments] = await dbPromise.query(
+      "SELECT full_name, email, course_title, amount, utr, status, created_at FROM payment_requests ORDER BY created_at DESC"
+    );
+
+    const doc = new PDFDocument({ margin: 40, size: "A4" });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=payments_report.pdf"
+    );
+
+    doc.pipe(res);
+
+    doc.fontSize(18).text("Skill Gateway", { align: "center" });
+    doc.fontSize(14).text("Payments Report", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(10).text(`Generated on: ${new Date().toLocaleString()}`);
+    doc.moveDown();
+
+    payments.forEach((p, i) => {
+      doc
+        .fontSize(11)
+        .text(`${i + 1}. ${p.full_name}`)
+        .fontSize(9)
+        .text(`Email: ${p.email}`)
+        .text(`Course: ${p.course_title}`)
+        .text(`Amount: ₹${p.amount}`)
+        .text(`UTR: ${p.utr}`)
+        .text(`Status: ${p.status}`)
+        .text(`Date: ${new Date(p.created_at).toLocaleString()}`)
+        .moveDown();
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error generating payments report");
+  }
+});
+////////////////// user route /////////////////////
+
+app.get("/admin/users", verifyTokenFromQuery, async (req, res) => {
+  try {
+    const [users] = await dbPromise.query(
+      "SELECT id, username, email, created_at FROM users ORDER BY created_at DESC"
+    );
+
+    res.json({
+      totalUsers: users.length,
+      users,
+    });
+  } catch (err) {
+    console.error("❌ Admin users fetch error:", err);
+    res.status(500).json({ message: "Failed to load users" });
+  }
+});
+
+//////////////////////// user details pdf line  ////////////////////////////
+
+app.get("/admin/reports/users", verifyTokenFromQuery, async (req, res) => {
+  try {
+    const [users] = await dbPromise.query(
+      "SELECT username, email, created_at FROM users ORDER BY created_at DESC"
+    );
+
+    const doc = new PDFDocument({ size: "A4", margin: 40 });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=user_details_report.pdf"
+    );
+
+    doc.pipe(res);
+
+    // Header
+    doc.fontSize(18).text("Skill Gateway", { align: "center" });
+    doc.moveDown(0.5);
+    doc.fontSize(14).text("User Details Report", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(10).text(`Generated on: ${new Date().toLocaleString()}`);
+    doc.moveDown();
+
+    doc.fontSize(11).text(`Total Users: ${users.length}`);
+    doc.moveDown();
+
+    users.forEach((u, index) => {
+      doc
+        .fontSize(11)
+        .text(`${index + 1}. ${u.username || "N/A"}`)
+        .fontSize(9)
+        .text(`Email: ${u.email}`)
+        .text(
+          `Joined: ${
+            u.created_at ? new Date(u.created_at).toLocaleDateString() : "-"
+          }`
+        )
+        .moveDown(0.6);
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error("❌ User report error:", err);
+    res.status(500).send("Error generating user report");
+  }
+});
+
+//================= emailForgot Pass ========================//
+
+app.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  otpStore[email] = {
+    otp,
+    expiry: Date.now() + 5 * 60 * 1000,
+  };
+
+  await transporter.sendMail({
+    from: "Skill Gateway <yourmail@gmail.com>",
+    to: email,
+    subject: "Password Reset OTP",
+    html: `<h2>Your OTP: ${otp}</h2><p>Valid for 5 minutes</p>`,
+  });
+
+  res.json({ success: true });
+});
+
+app.post("/reset-password", async (req, res) => {
+  try {
+    const { email, otp, password } = req.body;
+
+    // 1️⃣ Basic validation
+    if (!email || !otp || !password) {
+      return res.json({
+        success: false,
+        message: "Email, OTP and new password are required",
+      });
+    }
+
+    // 2️⃣ Check OTP record
+    const record = otpStore[email];
+
+    if (!record) {
+      return res.json({
+        success: false,
+        message: "OTP not found. Please request again.",
+      });
+    }
+
+    // 3️⃣ OTP match & expiry check
+    if (record.otp !== otp) {
+      return res.json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    if (Date.now() > record.expiry) {
+      delete otpStore[email];
+      return res.json({
+        success: false,
+        message: "OTP expired. Please request again.",
+      });
+    }
+
+    // 4️⃣ Hash new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 5️⃣ Update password in DB
+    db.query(
+      "UPDATE users SET password = ? WHERE email = ?",
+      [hashedPassword, email],
+      (err, result) => {
+        if (err) {
+          console.error("❌ Password update error:", err);
+          return res.status(500).json({
+            success: false,
+            message: "Database error while updating password",
+          });
+        }
+
+        // 6️⃣ Remove OTP after success
+        delete otpStore[email];
+
+        // 7️⃣ Final success response
+        return res.json({
+          success: true,
+          message: "Password reset successful. Please login again.",
+        });
+      }
+    );
+  } catch (error) {
+    console.error("❌ Reset password error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+app.use("/api", invoiceRoutes);
+
 // ================== START SERVER ==================
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
 });

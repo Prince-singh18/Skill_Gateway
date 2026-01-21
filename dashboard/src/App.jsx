@@ -10,7 +10,6 @@ const api = axios.create({
   withCredentials: true,
   validateStatus: () => true,
 });
-
 function App() {
   const [activeTab, setActiveTab] = useState("overview");
   const [user, setUser] = useState(null);
@@ -37,6 +36,16 @@ function App() {
   const [notifications, setNotifications] = useState([]);
   const [showNotif, setShowNotif] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // ================== INVOICE DOWNLOAD (FIXED) ==================
+  const downloadInvoice = (paymentId) => {
+    if (!paymentId) {
+      alert("Invoice not available for this course yet.");
+      return;
+    }
+
+    window.open(`http://localhost:5000/api/invoice/${paymentId}`, "_blank");
+  };
 
   // ---------- helper: format activity ----------
   const formatActivity = (rows) => {
@@ -124,12 +133,13 @@ function App() {
         coursesRes.status >= 200 && coursesRes.status < 300
           ? coursesRes.data
           : [];
-      const formattedCourses = (coursesData || []).map((c) => ({
+      const formattedCourses = coursesData.map((c) => ({
         id: c.course_id,
         title: c.title,
         level: c.level || "Beginner",
         progress: c.progress || 0,
         lastLesson: c.last_lesson || "Start now",
+        paymentId: c.payment_id, // ✅ VERY IMPORTANT
       }));
 
       setCourses(formattedCourses);
@@ -264,7 +274,9 @@ function App() {
           level: c.level || "Beginner",
           progress: c.progress || 0,
           lastLesson: c.last_lesson || "Start now",
+          paymentId: c.payment_id, // 🔥 MOST IMPORTANT LINE
         }));
+
         setCourses(formattedCourses);
         setSelectedCourse(formattedCourses[0] || null);
 
@@ -736,9 +748,9 @@ function App() {
                   selectedCourse={selectedCourse}
                   setSelectedCourse={setSelectedCourse}
                   onOpenCourse={(id) => setActiveCourseId(id)}
+                  downloadInvoice={downloadInvoice}
                 />
               )}
-
               {activeTab === "activity" && <ActivityTab activity={activity} />}
 
               {activeTab === "support" && (
@@ -882,6 +894,7 @@ function CoursesTab({
   selectedCourse,
   setSelectedCourse,
   onOpenCourse,
+  downloadInvoice,
 }) {
   return (
     <div className="grid-2-1 gap-24 fade-in-up">
@@ -901,15 +914,18 @@ function CoursesTab({
             >
               <p className="course-title">{course.title}</p>
               <p className="course-meta">{course.level}</p>
+
               <div className="progress-bar">
                 <div
                   className="progress-fill"
                   style={{ width: `${course.progress}%` }}
                 />
               </div>
+
               <p className="course-meta">
                 Progress: <strong>{course.progress}%</strong>
               </p>
+
               <button
                 className="secondary-btn"
                 onClick={(e) => {
@@ -918,6 +934,14 @@ function CoursesTab({
                 }}
               >
                 Open course
+              </button>
+
+              {/* ✅ NEW BUTTON */}
+              <button
+                className="secondary-btn"
+                onClick={() => downloadInvoice(course.paymentId)}
+              >
+                Download Invoice
               </button>
             </div>
           ))}

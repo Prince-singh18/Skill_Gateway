@@ -9,6 +9,7 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="/Frontend/alerts/custom-alert.css" />
 
     <style>
       * {
@@ -197,12 +198,26 @@
         color: #6b7280;
         text-align: left;
       }
+
+      .pending-box {
+        display: none;
+        max-width: 480px;
+        margin: 24px auto 0;
+        background: #fff7ed;
+        border-radius: 16px;
+        padding: 16px 20px;
+        border: 1px solid #fed7aa;
+      }
+
+      .pending-box h3 {
+        margin-bottom: 6px;
+      }
     </style>
   </head>
 
   <body>
     <div class="page-wrapper">
-      <!-- 🔙 BACK BUTTON (same style as submit) -->
+      <!-- 🔙 BACK BUTTON -->
       <div class="billing-header">
         <button id="back-btn" class="primary-btn back-btn">← Back</button>
       </div>
@@ -266,7 +281,7 @@
             />
             <input type="hidden" id="amount" name="amount" value="1100" />
 
-            <!-- DB ke courses table se jo ID hai, woh yahan daalo (example: 1) -->
+            <!-- DB courses table ID -->
             <input type="hidden" id="courseId" name="courseId" value="1" />
 
             <div class="form-group">
@@ -336,78 +351,133 @@
       </div>
     </div>
 
+    <!-- Custom Alert -->
+    <div id="ps-alert-overlay" class="ps-alert-hidden">
+      <div id="ps-alert-box">
+        <div id="ps-alert-title">Message</div>
+        <div id="ps-alert-message"></div>
+        <button id="ps-alert-btn">OK</button>
+      </div>
+    </div>
+
+    <div class="pending-box" id="pending-box">
+      <h3>⏳ Payment Under Verification</h3>
+      <p>
+        We have received your payment details.<br />
+        Please wait while we verify your transaction.
+      </p>
+      <p style="font-size: 0.85rem; color: gray">
+        This usually takes a few hours.
+      </p>
+    </div>
+
     <script>
+      // Backend base + dashboard URL
       const API_BASE = "http://localhost:5000"; // backend
       const DASHBOARD_URL = "http://localhost:5173/"; // user dashboard (React)
 
+      // Back button
       document.getElementById("back-btn").addEventListener("click", () => {
         window.history.back();
       });
 
-      document
-        .getElementById("billing-form")
-        .addEventListener("submit", async function (e) {
-          e.preventDefault();
+      const billingForm = document.getElementById("billing-form");
+      const submitBtn = document.getElementById("submit-payment-btn");
+      const pendingBox = document.getElementById("pending-box");
 
-          const btn = document.getElementById("submit-payment-btn");
-          btn.disabled = true;
-          btn.textContent = "Submitting...";
+      billingForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-          const fullName = document.getElementById("fullName").value.trim();
-          const phone = document.getElementById("phone").value.trim();
-          const email = document.getElementById("email").value.trim();
-          const courseTitle = document
-            .getElementById("courseTitle")
-            .value.trim();
-          const amount = document.getElementById("amount").value.trim();
-          const courseId = document.getElementById("courseId").value.trim();
-          const utr = document.getElementById("utr").value.trim();
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting...";
 
-          if (!fullName || !phone || !email || !utr) {
-            alert("Please fill all required fields.");
-            btn.disabled = false;
-            btn.textContent = "Submit Payment";
-            return;
+        const fullName = document.getElementById("fullName").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const courseTitle = document.getElementById("courseTitle").value.trim();
+        const amount = document.getElementById("amount").value.trim();
+        const courseId = document.getElementById("courseId").value.trim();
+        const utr = document.getElementById("utr").value.trim();
+
+        if (!fullName || !phone || !email || !utr) {
+          alert("Please fill all required fields.");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Submit Payment";
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_BASE}/api/payments/create`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              fullName,
+              phone,
+              email,
+              courseTitle,
+              courseId,
+              amount,
+              utr,
+            }),
+          });
+
+          // Handle non-200 responses
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+
+            if (data.code === "PAYMENT_PENDING") {
+              // Already under verification
+              if (typeof niceAlert === "function") {
+                await niceAlert(
+                  "Your payment is already under verification.\n\nPlease wait. You will be notified once it is approved.",
+                  "Payment Under Review ⏳"
+                );
+              } else {
+                alert(
+                  "Your payment is already under verification. You will be notified once it is approved."
+                );
+              }
+
+              // Show pending box and disable form
+              billingForm.style.display = "none";
+              pendingBox.style.display = "block";
+              return;
+            }
+
+            throw new Error(data.message || "Payment failed");
           }
 
-          try {
-            const res = await fetch(`${API_BASE}/api/payments/create`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                fullName,
-                phone,
-                email,
-                courseTitle,
-                courseId,
-                amount,
-                utr,
-              }),
-            });
+          const data = await res.json();
 
-            const data = await res.json();
-
-            if (data.success) {
+          if (data.success) {
+            if (typeof niceAlert === "function") {
+              await niceAlert(
+                "Payment details submitted successfully. We will verify and activate your course soon.",
+                "Payment Submitted"
+              );
+            } else {
               alert(
                 "Payment details submitted successfully. We will verify and activate your course soon."
               );
-
-              // ✅ SUCCESS PE USER DASHBOARD OPEN
-              window.location.href = DASHBOARD_URL;
-            } else {
-              alert(data.message || "Something went wrong. Please try again.");
-              btn.disabled = false;
-              btn.textContent = "Submit Payment";
             }
-          } catch (err) {
-            console.error("Payment submit error:", err);
-            alert("Server error, please try again later.");
-            btn.disabled = false;
-            btn.textContent = "Submit Payment";
+            window.location.href = DASHBOARD_URL;
+          } else {
+            alert(data.message || "Something went wrong. Please try again.");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Payment";
           }
-        });
+        } catch (err) {
+          console.error("Payment submit error:", err);
+          alert("Server error, please try again later.");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Submit Payment";
+        }
+      });
     </script>
+
+    <!-- Custom alert script -->
+    <script src="/Frontend/alerts/custom-alert.js"></script>
   </body>
 </html>

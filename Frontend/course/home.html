@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="home.css" />
+    <link rel="stylesheet" href="/Frontend/loader/global-loader.css">
+<script src="/Frontend/loader/global-loader.js" defer></script>
+
+
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
@@ -193,7 +197,7 @@
         <!-- Course 4 -->
         <div class="course-card">
           <img
-            src="/Frontend/assets/three.js.png"
+            src="/Frontend/assets/Three.js1.png"
             alt="Course 4"
             class="course-image"
           />
@@ -309,6 +313,12 @@
   <div id="global-toast-icon"></div>
   <span id="global-toast-text">Message</span>
 </div>
+
+<!-- Loader Overlay -->
+ <div id="page-loader">
+    <div class="loader-circle"></div>
+  </div>
+
 <script>
   // Global toast helper: window.showToast(message, type)
   // type: "info" | "success" | "warning" | "error"

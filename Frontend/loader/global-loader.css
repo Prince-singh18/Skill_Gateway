@@ -1,0 +1,52 @@
+/* Fullscreen transparent blur overlay */
+#page-loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.08); /* halka dark tint */
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+/* Hide state (JS se add hota hai) */
+#page-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Circle ring loader */
+.loader-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.16); /* track */
+  border-top-color: #ffffff; /* bright arc */
+  border-right-color: #60a5fa; /* blue accent */
+  animation: loader-spin 0.7s linear infinite;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.4),
+    0 14px 40px rgba(15, 23, 42, 0.55);
+}
+
+/* Rotation animation */
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  #page-loader {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .loader-circle {
+    width: 50px;
+    height: 50px;
+  }
+}

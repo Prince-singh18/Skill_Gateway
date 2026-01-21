@@ -6,6 +6,8 @@
     <title>Login/Register</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="/Frontend/login/login-register.css" />
+    <link rel="stylesheet" href="/Frontend/loader/global-loader.css" />
+    <script src="/Frontend/loader/global-loader.js" defer></script>
 
     <!-- Back button small styling -->
     <style>
@@ -59,7 +61,7 @@
 
           <div class="remember-forgot">
             <label><input type="checkbox" /> Remember me</label>
-            <a href="#">Forgot Password?</a>
+            <a href="#" onclick="showForgot()">Forgot Password?</a>
           </div>
 
           <button type="submit" class="btn">Login</button>
@@ -112,34 +114,6 @@
               />
               Continue with Google
             </a>
-
-            <!-- PHONE LOGIN -->
-            <a
-              href="#"
-              onclick="showPhoneLogin()"
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                width: 100%;
-                padding: 10px;
-                background: #ffffff;
-                color: #444;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                text-decoration: none;
-                font-weight: 500;
-                font-size: 14px;
-              "
-            >
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/159/159832.png"
-                alt="Phone"
-                style="width: 20px; height: 20px"
-              />
-              Continue with Phone Number
-            </a>
           </div>
 
           <div class="switch-form">
@@ -152,43 +126,6 @@
             style="color: red; margin-top: 10px; min-height: 18px"
           ></div>
         </form>
-      </div>
-
-      <!-- =============== PHONE LOGIN BOX =============== -->
-      <div id="phoneLoginBox" class="form-box hidden">
-        <h2>Phone Login</h2>
-
-        <div class="input-box">
-          <input
-            type="tel"
-            id="phoneNumberInput"
-            placeholder="+91xxxxxxxxxx"
-            required
-          />
-          <label>Phone Number</label>
-        </div>
-
-        <div id="recaptcha-container" style="margin: 10px 0"></div>
-
-        <button class="btn" type="button" onclick="sendOTP()">Send OTP</button>
-
-        <div class="input-box" style="margin-top: 10px">
-          <input type="text" id="otpInput" placeholder="123456" />
-          <label>Enter OTP</label>
-        </div>
-
-        <button class="btn" type="button" onclick="verifyOTP()">
-          Verify OTP
-        </button>
-
-        <div
-          id="phoneMessage"
-          style="margin-top: 10px; color: #fff; min-height: 18px"
-        ></div>
-
-        <div class="switch-form" style="margin-top: 10px">
-          <a href="#" onclick="showLogin()">← Back to Email Login</a>
-        </div>
       </div>
 
       <!-- =============== REGISTER BOX =============== -->
@@ -228,6 +165,43 @@
             style="color: green; margin-top: 10px; min-height: 18px"
           ></div>
         </form>
+      </div>
+    </div>
+
+    <!-- =============== FORGOT PASSWORD BOX =============== -->
+    <div class="form-box forgot hidden">
+      <h2>Reset Password</h2>
+
+      <div class="input-box">
+        <input type="email" id="fpEmail" required />
+        <label>Email</label>
+      </div>
+
+      <button class="btn" type="button" onclick="sendOTP()">Send OTP</button>
+
+      <div class="input-box hidden" id="otpBox">
+        <input type="text" id="fpOtp" />
+        <label>Enter OTP</label>
+      </div>
+
+      <div class="input-box hidden" id="newPassBox">
+        <input type="password" id="fpNewPass" />
+        <label>New Password</label>
+      </div>
+
+      <button
+        class="btn hidden"
+        type="button"
+        id="resetBtn"
+        onclick="resetPassword()"
+      >
+        Reset Password
+      </button>
+
+      <div id="fpMsg" style="margin-top: 10px; min-height: 18px"></div>
+
+      <div class="switch-form">
+        <a href="#" onclick="showLogin()">Back to Login</a>
       </div>
     </div>
 
@@ -271,15 +245,12 @@
         console.warn("Analytics error (ignored in dev):", e.message);
       }
       const auth = getAuth(app);
-      let confirmationResult = null;
-
       // ---------- UI SWITCHING ----------
       function showRegister() {
         document.querySelector(".login").classList.add("hidden");
         document.querySelector(".register").classList.remove("hidden");
         document.getElementById("loginMessage").textContent = "";
         document.getElementById("registerMessage").textContent = "";
-        document.getElementById("phoneLoginBox").classList.add("hidden");
       }
 
       function showLogin() {
@@ -287,43 +258,11 @@
         document.querySelector(".login").classList.remove("hidden");
         document.getElementById("loginMessage").textContent = "";
         document.getElementById("registerMessage").textContent = "";
-        document.getElementById("phoneLoginBox").classList.add("hidden");
-      }
-
-      function showPhoneLogin() {
-        document.querySelector(".login").classList.add("hidden");
-        document.querySelector(".register").classList.add("hidden");
-        document.getElementById("phoneLoginBox").classList.remove("hidden");
-        document.getElementById("phoneMessage").textContent = "";
-
-        // Reset old captcha if exists
-        if (window.recaptchaVerifier) {
-          try {
-            window.recaptchaVerifier.clear();
-          } catch (e) {}
-        }
-
-        // v10 syntax: (auth, containerId, options)
-        window.recaptchaVerifier = new RecaptchaVerifier(
-          auth,
-          "recaptcha-container",
-          {
-            size: "normal",
-            callback: () => {},
-            "expired-callback": () => {
-              document.getElementById("phoneMessage").textContent =
-                "reCAPTCHA expired. Please try again.";
-            },
-          }
-        );
-
-        window.recaptchaVerifier.render();
       }
 
       // make available to onclick=""
       window.showRegister = showRegister;
       window.showLogin = showLogin;
-      window.showPhoneLogin = showPhoneLogin;
 
       // ---------- EMAIL + PASSWORD LOGIN ----------
       document
@@ -414,74 +353,74 @@
           }
         });
 
-      // ---------- PHONE LOGIN (OTP) ----------
-      window.sendOTP = function () {
-        const phone = document.getElementById("phoneNumberInput").value.trim();
+      function showForgot() {
+        document.querySelector(".login").classList.add("hidden");
+        document.querySelector(".register").classList.add("hidden");
+        document.querySelector(".forgot").classList.remove("hidden");
+      }
+      window.showForgot = showForgot;
 
-        if (!phone || !phone.startsWith("+")) {
-          document.getElementById("phoneMessage").textContent =
-            "Please enter phone number in this format: +91xxxxxxxxxx";
-          return;
+      async function sendOTP() {
+        const email = document.getElementById("fpEmail").value;
+        const msg = document.getElementById("fpMsg");
+
+        msg.textContent = "";
+
+        const res = await fetch("http://localhost:5000/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          msg.style.color = "lightgreen";
+          msg.textContent = "OTP sent to your email";
+
+          document.getElementById("otpBox").classList.remove("hidden");
+          document.getElementById("newPassBox").classList.remove("hidden");
+          document.getElementById("resetBtn").classList.remove("hidden");
+        } else {
+          msg.style.color = "red";
+          msg.textContent = data.message;
         }
+      }
 
-        document.getElementById("phoneMessage").textContent = "Sending OTP...";
+      async function resetPassword() {
+        const email = document.getElementById("fpEmail").value;
+        const otp = document.getElementById("fpOtp").value;
+        const password = document.getElementById("fpNewPass").value;
+        const msg = document.getElementById("fpMsg");
 
-        signInWithPhoneNumber(auth, phone, window.recaptchaVerifier)
-          .then((result) => {
-            confirmationResult = result;
-            document.getElementById("phoneMessage").textContent = "OTP sent!";
-          })
-          .catch((error) => {
-            console.error(error);
-            document.getElementById("phoneMessage").textContent =
-              "Failed to send OTP: " + error.message;
-          });
-      };
+        msg.textContent = "";
 
-      window.verifyOTP = function () {
-        const code = document.getElementById("otpInput").value.trim();
+        const res = await fetch("http://localhost:5000/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp, password }),
+        });
 
-        if (!confirmationResult || !code) {
-          document.getElementById("phoneMessage").textContent =
-            "Enter OTP after sending it.";
-          return;
+        const data = await res.json();
+
+        if (data.success) {
+          msg.style.color = "lightgreen";
+          msg.textContent =
+            "Password reset successful! Redirecting to login...";
+
+          // 🔥 FINAL FIX
+          setTimeout(() => {
+            window.location.href = "/login.html";
+            // OR: window.location.reload();
+          }, 1200);
+        } else {
+          msg.style.color = "red";
+          msg.textContent = data.message || "Reset failed";
         }
+      }
 
-        document.getElementById("phoneMessage").textContent =
-          "Verifying OTP...";
-
-        confirmationResult
-          .confirm(code)
-          .then((result) => {
-            const phoneUser = result.user;
-
-            fetch("http://localhost:5000/phone-login", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              credentials: "include",
-              body: JSON.stringify({ phone: phoneUser.phoneNumber }),
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.success) {
-                  window.location.href = "http://localhost:5173/";
-                } else {
-                  document.getElementById("phoneMessage").textContent =
-                    "Phone verified but server error: " + data.message;
-                }
-              })
-              .catch((err) => {
-                console.error(err);
-                document.getElementById("phoneMessage").textContent =
-                  "Network error.";
-              });
-          })
-          .catch((error) => {
-            console.error(error);
-            document.getElementById("phoneMessage").textContent =
-              "Invalid OTP: " + error.message;
-          });
-      };
+      window.sendOTP = sendOTP;
+      window.resetPassword = resetPassword;
     </script>
   </body>
 </html>
